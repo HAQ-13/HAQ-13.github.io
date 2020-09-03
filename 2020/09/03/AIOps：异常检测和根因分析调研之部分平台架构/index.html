@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"haq-13.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="调研归纳了部分现有平台关于异常检测和根因分析的自动化流程的系统架构、模型算法和维度指标。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AIOps：异常检测和根因分析调研之部分平台架构">
+<meta property="og:url" content="https://haq-13.github.io/2020/09/03/AIOps%EF%BC%9A%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E5%92%8C%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90%E8%B0%83%E7%A0%94%E4%B9%8B%E9%83%A8%E5%88%86%E5%B9%B3%E5%8F%B0%E6%9E%B6%E6%9E%84/index.html">
+<meta property="og:site_name" content="HAQ13&#39;s Tech Play">
+<meta property="og:description" content="调研归纳了部分现有平台关于异常检测和根因分析的自动化流程的系统架构、模型算法和维度指标。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://haq-13.github.io/2020/09/03/AIOps%EF%BC%9A%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E5%92%8C%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90%E8%B0%83%E7%A0%94%E4%B9%8B%E9%83%A8%E5%88%86%E5%B9%B3%E5%8F%B0%E6%9E%B6%E6%9E%84/4.jpeg">
+<meta property="og:image" content="https://haq-13.github.io/2020/09/03/AIOps%EF%BC%9A%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E5%92%8C%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90%E8%B0%83%E7%A0%94%E4%B9%8B%E9%83%A8%E5%88%86%E5%B9%B3%E5%8F%B0%E6%9E%B6%E6%9E%84/24.jpeg">
+<meta property="og:image" content="https://haq-13.github.io/2020/09/03/AIOps%EF%BC%9A%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E5%92%8C%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90%E8%B0%83%E7%A0%94%E4%B9%8B%E9%83%A8%E5%88%86%E5%B9%B3%E5%8F%B0%E6%9E%B6%E6%9E%84/22.jpeg">
+<meta property="og:image" content="https://haq-13.github.io/2020/09/03/AIOps%EF%BC%9A%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E5%92%8C%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90%E8%B0%83%E7%A0%94%E4%B9%8B%E9%83%A8%E5%88%86%E5%B9%B3%E5%8F%B0%E6%9E%B6%E6%9E%84/11.png">
+<meta property="og:image" content="https://haq-13.github.io/2020/09/03/AIOps%EF%BC%9A%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E5%92%8C%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90%E8%B0%83%E7%A0%94%E4%B9%8B%E9%83%A8%E5%88%86%E5%B9%B3%E5%8F%B0%E6%9E%B6%E6%9E%84/17.png">
+<meta property="og:image" content="https://haq-13.github.io/2020/09/03/AIOps%EF%BC%9A%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E5%92%8C%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90%E8%B0%83%E7%A0%94%E4%B9%8B%E9%83%A8%E5%88%86%E5%B9%B3%E5%8F%B0%E6%9E%B6%E6%9E%84/3.jpg">
+<meta property="og:image" content="https://haq-13.github.io/2020/09/03/AIOps%EF%BC%9A%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E5%92%8C%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90%E8%B0%83%E7%A0%94%E4%B9%8B%E9%83%A8%E5%88%86%E5%B9%B3%E5%8F%B0%E6%9E%B6%E6%9E%84/1.jpg">
+<meta property="og:image" content="https://haq-13.github.io/2020/09/03/AIOps%EF%BC%9A%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E5%92%8C%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90%E8%B0%83%E7%A0%94%E4%B9%8B%E9%83%A8%E5%88%86%E5%B9%B3%E5%8F%B0%E6%9E%B6%E6%9E%84/5.jpg">
+<meta property="og:image" content="https://haq-13.github.io/2020/09/03/AIOps%EF%BC%9A%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E5%92%8C%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90%E8%B0%83%E7%A0%94%E4%B9%8B%E9%83%A8%E5%88%86%E5%B9%B3%E5%8F%B0%E6%9E%B6%E6%9E%84/8.jpg">
+<meta property="og:image" content="https://haq-13.github.io/2020/09/03/AIOps%EF%BC%9A%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E5%92%8C%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90%E8%B0%83%E7%A0%94%E4%B9%8B%E9%83%A8%E5%88%86%E5%B9%B3%E5%8F%B0%E6%9E%B6%E6%9E%84/23.png">
+<meta property="og:image" content="https://haq-13.github.io/2020/09/03/AIOps%EF%BC%9A%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E5%92%8C%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90%E8%B0%83%E7%A0%94%E4%B9%8B%E9%83%A8%E5%88%86%E5%B9%B3%E5%8F%B0%E6%9E%B6%E6%9E%84/18.png">
+<meta property="article:published_time" content="2020-09-03T13:40:18.000Z">
+<meta property="article:modified_time" content="2020-09-03T15:26:29.882Z">
+<meta property="article:author" content="Haoyang Qian">
+<meta property="article:tag" content="Anomaly Dedection">
+<meta property="article:tag" content="Root Cause Analysis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://haq-13.github.io/2020/09/03/AIOps%EF%BC%9A%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E5%92%8C%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90%E8%B0%83%E7%A0%94%E4%B9%8B%E9%83%A8%E5%88%86%E5%B9%B3%E5%8F%B0%E6%9E%B6%E6%9E%84/4.jpeg">
+
+<link rel="canonical" href="https://haq-13.github.io/2020/09/03/AIOps%EF%BC%9A%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E5%92%8C%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90%E8%B0%83%E7%A0%94%E4%B9%8B%E9%83%A8%E5%88%86%E5%B9%B3%E5%8F%B0%E6%9E%B6%E6%9E%84/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>AIOps：异常检测和根因分析调研之部分平台架构 | HAQ13's Tech Play</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="/custom_css_source.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">HAQ13's Tech Play</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Learning to learn</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://haq-13.github.io/2020/09/03/AIOps%EF%BC%9A%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E5%92%8C%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90%E8%B0%83%E7%A0%94%E4%B9%8B%E9%83%A8%E5%88%86%E5%B9%B3%E5%8F%B0%E6%9E%B6%E6%9E%84/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Haoyang Qian">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HAQ13's Tech Play">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          AIOps：异常检测和根因分析调研之部分平台架构
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-09-03 21:40:18" itemprop="dateCreated datePublished" datetime="2020-09-03T21:40:18+08:00">2020-09-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AIOps/" itemprop="url" rel="index"><span itemprop="name">AIOps</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.1k</span>
+            </span>
+            <div class="post-description">调研归纳了部分现有平台关于异常检测和根因分析的自动化流程的系统架构、模型算法和维度指标。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>上一周做了几天关于异常检测和根因分析的调研，了解了一些关于 <code>AIOps</code> 的内容，觉得挺有意思的，也是近期工作中会开展的相关内容。<br>为了拓宽思路，归纳了现有的一些异常检测和根因分析系统所用到的指标维度、算法模型和系统架构。当然，想要真正理解这些系统，还要花更多的功夫，光调研几天是不够的。</p>
+<h2 id="携程实时智能异常检测平台的算法及工程实现"><a href="#携程实时智能异常检测平台的算法及工程实现" class="headerlink" title="携程实时智能异常检测平台的算法及工程实现"></a>携程实时智能异常检测平台的算法及工程实现</h2><h3 id="主要目标"><a href="#主要目标" class="headerlink" title="主要目标"></a>主要目标</h3><p>异常检测算法的优化，实时性告警的工程技术实现。</p>
+<h3 id="算法模型指标选择"><a href="#算法模型指标选择" class="headerlink" title="算法模型指标选择"></a>算法模型指标选择</h3><p>订单类指标，关键是要确定一致认可没有歧义的异常数据评估标准。</p>
+<h3 id="异常数据样本来源"><a href="#异常数据样本来源" class="headerlink" title="异常数据样本来源"></a>异常数据样本来源</h3><p>订单类异常数据来自各个渠道的告警和报障，包括监控系统、用户报障、内部人员发现的问题，如果确认是一个影响了订单的生产故障就会被记录下来，产生标注。</p>
+<ul>
+<li>对于订单这个指标而言，只要故障影响到订单，就是异常；</li>
+<li>同时所有订单问题都被记录在处理中心，代表了系统所有可见异常。这为算法迭代和优化提供了明确的检验标准和可靠的标注。</li>
+</ul>
+<h3 id="算法选择"><a href="#算法选择" class="headerlink" title="算法选择"></a>算法选择</h3><p>引入LSTM模型来处理长期时间序列数据。<br>此前，也借鉴了业界采用较多的统计分析方法，框定滑动样本集做数据处理和转化，经过归一化、去周期、去趋势，将最新采集到的数据点经过同样转换，和样本集的残差序列进行比较，超出一定范围就判断为异常；或是综合离群点计算的方法做投票，多数算法认为异常则判断为异常。<br>但是上述这种做法并没有提升报警质量，误报和漏报的矛盾点是和规则化告警类似的。</p>
+<h4 id="离线训练"><a href="#离线训练" class="headerlink" title="离线训练"></a>离线训练</h4><p><img data-src="4.jpeg" alt></p>
+<h4 id="在线检测"><a href="#在线检测" class="headerlink" title="在线检测"></a>在线检测</h4><p><img data-src="24.jpeg" alt></p>
+<h4 id="检测结果"><a href="#检测结果" class="headerlink" title="检测结果"></a>检测结果</h4><p>相比于规则化告警系统，算法的告警量平均压缩了10倍左右，检出的故障数量反而略高。<br>漏报原因分析：指标正常的用户人工报障，肉眼及系统都无法检出；绝对值小导致少量波动带来巨大影响；历史数据波动比较剧烈；趋势变化明显。</p>
+<h3 id="实时性工程"><a href="#实时性工程" class="headerlink" title="实时性工程"></a>实时性工程</h3><p>在 <strong>Storm</strong>/<strong>Spark streaming</strong>/<strong>Flink</strong> 里选择了 <strong>Flink</strong>，因为它滑动窗口灵活，数据可以基于自身时间戳来统计，同时 <strong>Flink</strong> 本身是为实时计算设计的，容错性比较好，同时也预留了支持秒级数据采集粒度的能力。从 <strong>Python</strong> 转到了 <strong>Java</strong>，减少了数据校验的时间开销。</p>
+<h4 id="系统架构"><a href="#系统架构" class="headerlink" title="系统架构"></a>系统架构</h4><p><img data-src="22.jpeg" alt></p>
+<h3 id="算法局限"><a href="#算法局限" class="headerlink" title="算法局限"></a>算法局限</h3><p>服务器压力大，训练时间过长，内存占用多，所需资源随检测指标数量线性增长。对绝对值较小的指标没有较好的解决方案，很容易误报。对非周期性随机序列，无法学习出模式，无法判断。</p>
+<p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1416353">原文：干货 | 携程实时智能异常检测平台的算法及工程实现</a></p>
+<h2 id="DataPipeline业务异常实时自动化检测"><a href="#DataPipeline业务异常实时自动化检测" class="headerlink" title="DataPipeline业务异常实时自动化检测"></a>DataPipeline业务异常实时自动化检测</h2><h3 id="主要目标-1"><a href="#主要目标-1" class="headerlink" title="主要目标"></a>主要目标</h3><p>引入AI减少人工。<br>基于人工方法的不足：</p>
+<ul>
+<li>大量业务指标没被实时监控；</li>
+<li>告警洪流；</li>
+<li>误报漏报；</li>
+<li>人工维护成本。</li>
+</ul>
+<h3 id="AI系统主要挑战和设计理念"><a href="#AI系统主要挑战和设计理念" class="headerlink" title="AI系统主要挑战和设计理念"></a>AI系统主要挑战和设计理念</h3><p>主要挑战：</p>
+<ul>
+<li>异常定义模糊且不同数据指标表现形式千差万别；</li>
+<li>很难获取标注数据；</li>
+<li>对算法和系统的实时性和可扩展性要求很高。</li>
+</ul>
+<p>设计理念：</p>
+<ul>
+<li>无/半监督机器学习算法为主；</li>
+<li>算法跟业务解耦；</li>
+<li>异常相关性学习和根因分析；</li>
+<li>算法扩展性和实时性。</li>
+</ul>
+<h3 id="算法实现思路"><a href="#算法实现思路" class="headerlink" title="算法实现思路"></a>算法实现思路</h3><p>步骤：</p>
+<ol>
+<li>接入数据；</li>
+<li>对正常表现模式建模；</li>
+<li>异常的检测和过滤；</li>
+<li>关联多个异常并自动告警。</li>
+</ol>
+<p>算法关键是要开发算法来根据数据本身的底层表现自动选择最合适的算法进行拟合。最常用的算法可以分为基于统计模型的算法和深度学习的算法。对于周期性学习，鉴于实时性和可扩展要求，用subsampling优化降低计算复杂度。对于相关性学习，鉴于告警洪流问题，采取多变量分析，在整体层面检测异常，给用户汇总后的告警，但是该方法很难规模化，且解释性较差。</p>
+<h3 id="系统架构-1"><a href="#系统架构-1" class="headerlink" title="系统架构"></a>系统架构</h3><p>产品功能组成：接入企业的各种业务系统。挑战是如何将多源异构的数据以一致的方式接入，且可以同时处理流式和批式数据。<br>核心系统架构：主要分为线上处理和线下模型训练。</p>
+<p><a target="_blank" rel="noopener" href="https://ai.51cto.com/art/202002/611472.htm###">原文：一个Bug损失200亿！如何搭建业务异常检测系统？</a></p>
+<h2 id="优酷技术实践：自动检测及修复视频播放异常"><a href="#优酷技术实践：自动检测及修复视频播放异常" class="headerlink" title="优酷技术实践：自动检测及修复视频播放异常"></a>优酷技术实践：自动检测及修复视频播放异常</h2><h3 id="异常指标"><a href="#异常指标" class="headerlink" title="异常指标"></a>异常指标</h3><p><img data-src="11.png" alt><br>抽象出流程异常和内容异常两类问题。<br>针对异常进行量化，并设定优先级，多个异常同时发生时上报优先级高的异常。<br>定位异常发生的模块并监控异常发生时各模块的工作状态，进行自修复工作。<br><img data-src="17.png" alt><br>根据模块采集到的信息制定异常映射表。<br>制定视频播放、信息查询、异常检测、自动修复、恢复播放的处理流程。</p>
+<h3 id="应用效果"><a href="#应用效果" class="headerlink" title="应用效果"></a>应用效果</h3><p>监控上线后，可大概定位问题所在，部分异常可自行修复，使相关客诉降低了50%。通过监控发现一批硬解码能力较差的机型，用降档策略提升播放体验。通过监控数据，使高计算复杂度业务对播放业务是否有影响有了很直观的衡量。<br>播放链条监控为技术优化提供了方向和衡量标准。</p>
+<h3 id="未来规划"><a href="#未来规划" class="headerlink" title="未来规划"></a>未来规划</h3><p>提升精准度，提升自动化程度，扩展监控内容。</p>
+<p><a target="_blank" rel="noopener" href="https://developer.aliyun.com/article/760672">原文：优酷技术实践：自动检测及修复视频播放异常</a></p>
+<h2 id="Yahoo大规模时序数据异常检测技术"><a href="#Yahoo大规模时序数据异常检测技术" class="headerlink" title="Yahoo大规模时序数据异常检测技术"></a>Yahoo大规模时序数据异常检测技术</h2><h3 id="整体架构"><a href="#整体架构" class="headerlink" title="整体架构"></a>整体架构</h3><p><strong>Yahoo</strong> 的异常检测综合系统 <strong>EGADS</strong> 框架有三个主要部分：时间序列建模模块、异常检测模块和报警模块。<br>由于监控服务每秒要处理数百万个数据点，所以可扩展、精准且自动化的异常检测至关重要。系统作为独立平台，可用作大型系统中的库。系统和监控服务集成架构如图。<br><img data-src="3.jpg" alt><br>由于CPU负载、I/O和内存占用方面的可扩展性要求，并且数据点处理也要尽可能高效，所以模型存储在内存中，且为了控制成本，模型应尽可能小。</p>
+<h3 id="异常检测算法"><a href="#异常检测算法" class="headerlink" title="异常检测算法"></a>异常检测算法</h3><p><strong>EGADS</strong> 主要检测三类异常：异常值、波动点和异常时间序列。<br>异常值检测两类算法：插件方法和基于时间序列分解的方法。<br>变点检测：基于时间窗口的变点检测，建模测量残差分布。<br>异常时间序列检测：基于各种时间序列特征将时间序列聚类，检测异常服务器或者发现相似的异常时间序列。</p>
+<h3 id="时序数据特征"><a href="#时序数据特征" class="headerlink" title="时序数据特征"></a>时序数据特征</h3><p><img data-src="1.jpg" alt></p>
+<h3 id="时序建模和指标选择"><a href="#时序建模和指标选择" class="headerlink" title="时序建模和指标选择"></a>时序建模和指标选择</h3><p>有大量候选模型，不同模型对精度影响很大，要基于数据特征进行模型选择。同时，时序模型需要高性能技术以支持大规模数据流的实时计算，因此要在模型大小、训练时间和准确性之间权衡。首先设定资源和模型训练时间目标，再选择相应模型。用于建模的指标列表如图。<br><img data-src="5.jpg" alt><br>没有一个最佳异常检测模型能适合所有业务场景，不同算法需要结合检测不同类型的异常来确定。为了系统能优雅和稳健地处理数据中存在的各种异常现象，<strong>EGADS</strong> 被构建为将一组异常检测模型组合成一个最佳框架的库，这些模型的异常被转发到过滤组件以进行精确的异常检测。<br>异常的重要性也取决于实际的应用场景，过滤阶段要使用不同的模型特征，以得到更高的精确率和召回率。</p>
+<p><a target="_blank" rel="noopener" href="https://juejin.im/entry/6844903494118277127">原文：Yahoo大规模时列数据异常检测技术及其高性能可伸缩架构</a></p>
+<h2 id="百度大规模时序指标自动异常检测实战"><a href="#百度大规模时序指标自动异常检测实战" class="headerlink" title="百度大规模时序指标自动异常检测实战"></a>百度大规模时序指标自动异常检测实战</h2><h3 id="两个挑战"><a href="#两个挑战" class="headerlink" title="两个挑战"></a>两个挑战</h3><p>数据规模大，曲线的特征差异明显。</p>
+<h3 id="三个场景"><a href="#三个场景" class="headerlink" title="三个场景"></a>三个场景</h3><ul>
+<li>场景一：数据无规律波动但在较小波动范围内。设定阈值，超过告警。累积法，滤除毛刺，考虑了数据的累加效应。</li>
+<li>场景二：长期波动幅度大，但短期波动幅度小，体现为较光滑的曲线。环比附近的数据，检查是否存在突然的大幅上涨或下跌。最近两个窗口的均值变化比例，在变化比例空间检测突升或突降。</li>
+<li>场景三：有规律的周期性波动。与历史数据作同比。根据z-score得出z空间，设置阈值发现异常。</li>
+</ul>
+<h3 id="算法选择自动化"><a href="#算法选择自动化" class="headerlink" title="算法选择自动化"></a>算法选择自动化</h3><p>自动化需求：大量曲线的算法选择成本很高。算法在不同时段的参数不同，参数配置成本高。曲线特征会随业务系统的结构调整而发生变化，需要定期维护。<br>算法选择决策：建立数据与算法的映射，周期性数据配置同比算法，非周期数据通过波动范围来界定。长期波动远大于局部波动的时候，倾向于突升突降；全局波动近似等于局部波动的时候，恒定阈值算法更合适。<br>周期数据判断方法：基于差分的数据周期特性判断方法。<br><img data-src="8.jpg" alt></p>
+<h3 id="参数配置自动化"><a href="#参数配置自动化" class="headerlink" title="参数配置自动化"></a>参数配置自动化</h3><p>恒定阈值算法：根据 ECDF（经验累积概率分布曲线），只要配置经验故障概率，就可以找到阈值，通过补偿系数解决ECDF与真实CDF差距问题。<br>突升突降算法：把原始数据转换到r空间，在r空间上设置恒定阈值，再设置窗口大小。<br>同比算法：使用z-score把原始数据转换到z空间，在z空间上配置恒定阈值参数，同比天数和窗口大小一般使用全局设置。</p>
+<p><a target="_blank" rel="noopener" href="https://toutiao.io/posts/4jmfna/preview">原文：异常检测：百度是这样做的</a></p>
+<h2 id="腾讯蓝鲸数据平台之告警系统"><a href="#腾讯蓝鲸数据平台之告警系统" class="headerlink" title="腾讯蓝鲸数据平台之告警系统"></a>腾讯蓝鲸数据平台之告警系统</h2><h3 id="监控对象"><a href="#监控对象" class="headerlink" title="监控对象"></a>监控对象</h3><p>业务规则和系统可靠性。</p>
+<h3 id="监控指标和策略"><a href="#监控指标和策略" class="headerlink" title="监控指标和策略"></a>监控指标和策略</h3><p>系统可靠性监控目标：</p>
+<ul>
+<li>系统是否在持续完成设定好的工作；</li>
+<li>用户体验是否良好；</li>
+<li>问题或者瓶颈在哪里。</li>
+</ul>
+<p>数据库采集指标：DB请求数的绝对量，DB正确响应相对请求数的占比等。<br>用户体验采集指标：平均排队时间，平均总响应延迟，99%/95%/90%的响应延迟。<br>故障定位：每个层次做告警，顶层服务告警触发自动定位程序，按依赖关系和大致时间范围定位告警之间的关联。</p>
+<h3 id="基于曲线平滑性的异常检测"><a href="#基于曲线平滑性的异常检测" class="headerlink" title="基于曲线平滑性的异常检测"></a>基于曲线平滑性的异常检测</h3><p>优点：</p>
+<ul>
+<li>依赖的数据少，不依赖于周期性；</li>
+<li>非常敏感，容忍的波动范围小。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>过于敏感，容易误报；</li>
+<li>业务曲线自身可能有规律性的突升突降。</li>
+</ul>
+<p>最佳使用方式是不用一根曲线，而是用几条相关的曲线，如果同时出现平滑度破坏，且与业务规律的趋势相背离，则认定为异常。</p>
+<h3 id="基于绝对值的时间周期性的异常检测"><a href="#基于绝对值的时间周期性的异常检测" class="headerlink" title="基于绝对值的时间周期性的异常检测"></a>基于绝对值的时间周期性的异常检测</h3><p>优点：</p>
+<ul>
+<li>计算简单；</li>
+<li>可以确保发现大故障。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>依赖周期性的历史数据，无法对新接入曲线告警；</li>
+<li>非常不敏感，小波动无法发现。</li>
+</ul>
+<h3 id="基于振幅的时间周期性的异常检测"><a href="#基于振幅的时间周期性的异常检测" class="headerlink" title="基于振幅的时间周期性的异常检测"></a>基于振幅的时间周期性的异常检测</h3><p>优点：</p>
+<ul>
+<li>比绝对值要敏感；</li>
+<li>利用时间周期性规避了业务曲线自身的周期性突升突降。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>要求原曲线平滑；</li>
+<li>周期性突升突降的时间点必须重合，不然会误报；</li>
+<li>按百分比计算在低峰容易误报；</li>
+<li>突降不一定代表故障，而可能是上层服务波动。</li>
+</ul>
+<h3 id="基于曲线回升的异常判断"><a href="#基于曲线回升的异常判断" class="headerlink" title="基于曲线回升的异常判断"></a>基于曲线回升的异常判断</h3><p>在异常点的几个时间点后重跑模型去判断曾经发生过一个异常，是异常的事后发现机制。用半自动化的方式建立一个历史异常的样本库，可以用作以后更复杂的机器学习算法的训练集。</p>
+<p><a target="_blank" rel="noopener" href="http://dockone.io/article/537">原文：DockOne技术分享（十四）：腾讯蓝鲸数据平台之告警系统</a></p>
+<h2 id="爱奇艺群体用户卡顿比异常自动化处理系统"><a href="#爱奇艺群体用户卡顿比异常自动化处理系统" class="headerlink" title="爱奇艺群体用户卡顿比异常自动化处理系统"></a>爱奇艺群体用户卡顿比异常自动化处理系统</h2><h3 id="点播卡顿原因"><a href="#点播卡顿原因" class="headerlink" title="点播卡顿原因"></a>点播卡顿原因</h3><p>主要两种：</p>
+<ul>
+<li>播放器解码发生的解码卡顿；</li>
+<li>数据缓存不足发生的网络卡顿。</li>
+</ul>
+<p>解码卡顿主要原因是用户使用的客户端性能不足，次要原因是客户端程序存在bug。解码卡顿故障率常年稳定，极少突变。本文主要研究网络卡顿。</p>
+<h3 id="卡顿比概念"><a href="#卡顿比概念" class="headerlink" title="卡顿比概念"></a>卡顿比概念</h3><p>以每个5分钟为统计时间单位，该5分钟的卡顿比=（5分钟卡顿一次及以上独立用户数）/（5分钟内总独立用户数）。分子和分母随统计维度（省份、运营商、IDC、客户端类型等）同时变化。</p>
+<h3 id="卡顿异常分类"><a href="#卡顿异常分类" class="headerlink" title="卡顿异常分类"></a>卡顿异常分类</h3><p>内部系统：客户端网络数据下载模块、客户端播放事件统计模块、视频CDN调度系统、视频CDN服务器等。可能影响用户体验，也可能是系统统计错误。<br>服务器端问题：IDC流量跑满、交换机故障、视频服务器故障等。一定会影响用户体验。<br>运营商网络问题：上联链路、省干等问题。一定会影响用户体验。由于问题在于运营商，只能通过商务投诉和协调，处理效率会很低。<br>用户端问题：研究群体用户行为，而不是某个用户的断网问题。不易排查，需要对卡顿用户进行精确的用户画像和深入分析。一定会影响用户体验，但是不一定影响正常观看视频的用户，不一定需要特殊处理。</p>
+<h3 id="卡顿感知系统"><a href="#卡顿感知系统" class="headerlink" title="卡顿感知系统"></a>卡顿感知系统</h3><p>实时分析所有细粒度卡顿比，在进行历史对比、过滤的基础上，通过用户数量对比及聚类方法给出疑似概率。在此基础上，系统利用SVM方法将服务器端的下载速度训练成预测的卡顿比，并将此与真实的卡顿比对比，相差过大说明是统计系统的问题。<br>内部管理机制：针对卡顿比制定了多项管理制度。</p>
+<h3 id="监控自动化"><a href="#监控自动化" class="headerlink" title="监控自动化"></a>监控自动化</h3><p>数据多维度监控。通过阈值、对比等方法，异常告警准确率只有83%左右。在将流量数据进行傅立叶变换后，在时域和频域同时进行监控，将准确率提高到了97.6%以上。</p>
+<h3 id="用户研究"><a href="#用户研究" class="headerlink" title="用户研究"></a>用户研究</h3><p>处理结果表明，有20%的卡顿比问题与用户行为相关。在常规处理基础上，将所有客户端统计中异常的用户行为（作弊行为、攻击行为等）按照运营商、省份等维度进行统计；若5分钟内某个统计维度的异常用户卡顿达到一定数量，直接告警。另外，离线的卡顿数据接入到用户行为分析系统中，将卡顿作为用户行为的一个维度进行训练，补充了目前的用户行为研究方法。</p>
+<h3 id="卡顿异常自动分析系统"><a href="#卡顿异常自动分析系统" class="headerlink" title="卡顿异常自动分析系统"></a>卡顿异常自动分析系统</h3><p>主要两个功能:</p>
+<ul>
+<li>对接监控的相关接口，将卡顿预警与其他告警进行关联；</li>
+<li>进行离线查询，输入相应的疑似卡顿问题时间段后，分析系统能够自动获取各个监控系统的离线数据，并根据预设算法进行分析，直接给出此卡顿比问题的最可能原因。</li>
+</ul>
+<p>目前执行单次任务的时间在3分钟左右。</p>
+<h3 id="实战结果"><a href="#实战结果" class="headerlink" title="实战结果"></a>实战结果</h3><p>除运营商问题以外的大规模卡顿比异常，超过93%能够在15分钟内解决；超过99.9%的问题能够在24小时内解决。运营商导致的卡顿比异常问题，超过97%能够在20分钟内确定问题故障点并发起投诉。</p>
+<p><a target="_blank" rel="noopener" href="http://www.iqiyi.com/common/20170919/308dd85a72b417d6.html">原文：爱奇艺点播视频方法流畅度问题处理</a></p>
+<h2 id="宜信智能监控平台建设实践"><a href="#宜信智能监控平台建设实践" class="headerlink" title="宜信智能监控平台建设实践"></a>宜信智能监控平台建设实践</h2><h3 id="智能运维工程实践"><a href="#智能运维工程实践" class="headerlink" title="智能运维工程实践"></a>智能运维工程实践</h3><p>异常检测，根因分析，告警收敛和智能降噪。</p>
+<h3 id="异常检测框架"><a href="#异常检测框架" class="headerlink" title="异常检测框架"></a>异常检测框架</h3><p><img data-src="23.png" alt></p>
+<h3 id="全维度的数据可关联"><a href="#全维度的数据可关联" class="headerlink" title="全维度的数据可关联"></a>全维度的数据可关联</h3><p>可以是通过画像建立的强关联关系，比如宿主机与虚拟机、虚拟机与应用服务器的关系；可以是通过调用链路或服务流图谱建立的强关联关系；也可以是通过机器学习算法建立的关联关系，比如同一时间窗口同时变化的指标，可能存在某种关联。</p>
+<h3 id="根因分析"><a href="#根因分析" class="headerlink" title="根因分析"></a>根因分析</h3><p><img data-src="18.png" alt><br>在根因分析和定位的过程中，顺带实现了告警收敛和智能降噪。</p>
+<p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1541001">原文：宜信智能监控平台建设实践|分享实录</a></p>
+
+    </div>
+    <!-- 文章结束表示语-->
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paint-brush"></i>感谢阅读-------------</div>
+    
+</div>
+      
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>喜欢就请打个赏吧^_^</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="Haoyang Qian 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="Haoyang Qian 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Anomaly-Dedection/" rel="tag"><i class="fa fa-tag"></i> Anomaly Dedection</a>
+              <a href="/tags/Root-Cause-Analysis/" rel="tag"><i class="fa fa-tag"></i> Root Cause Analysis</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/09/01/Hello-Hexo/" rel="prev" title="Hello Hexo">
+      <i class="fa fa-chevron-left"></i> Hello Hexo
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%90%BA%E7%A8%8B%E5%AE%9E%E6%97%B6%E6%99%BA%E8%83%BD%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E5%B9%B3%E5%8F%B0%E7%9A%84%E7%AE%97%E6%B3%95%E5%8F%8A%E5%B7%A5%E7%A8%8B%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">携程实时智能异常检测平台的算法及工程实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E7%9B%AE%E6%A0%87"><span class="nav-number">2.1.</span> <span class="nav-text">主要目标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E6%A8%A1%E5%9E%8B%E6%8C%87%E6%A0%87%E9%80%89%E6%8B%A9"><span class="nav-number">2.2.</span> <span class="nav-text">算法模型指标选择</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%82%E5%B8%B8%E6%95%B0%E6%8D%AE%E6%A0%B7%E6%9C%AC%E6%9D%A5%E6%BA%90"><span class="nav-number">2.3.</span> <span class="nav-text">异常数据样本来源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E9%80%89%E6%8B%A9"><span class="nav-number">2.4.</span> <span class="nav-text">算法选择</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A6%BB%E7%BA%BF%E8%AE%AD%E7%BB%83"><span class="nav-number">2.4.1.</span> <span class="nav-text">离线训练</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%A8%E7%BA%BF%E6%A3%80%E6%B5%8B"><span class="nav-number">2.4.2.</span> <span class="nav-text">在线检测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A3%80%E6%B5%8B%E7%BB%93%E6%9E%9C"><span class="nav-number">2.4.3.</span> <span class="nav-text">检测结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E6%97%B6%E6%80%A7%E5%B7%A5%E7%A8%8B"><span class="nav-number">2.5.</span> <span class="nav-text">实时性工程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84"><span class="nav-number">2.5.1.</span> <span class="nav-text">系统架构</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E5%B1%80%E9%99%90"><span class="nav-number">2.6.</span> <span class="nav-text">算法局限</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DataPipeline%E4%B8%9A%E5%8A%A1%E5%BC%82%E5%B8%B8%E5%AE%9E%E6%97%B6%E8%87%AA%E5%8A%A8%E5%8C%96%E6%A3%80%E6%B5%8B"><span class="nav-number">3.</span> <span class="nav-text">DataPipeline业务异常实时自动化检测</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E7%9B%AE%E6%A0%87-1"><span class="nav-number">3.1.</span> <span class="nav-text">主要目标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AI%E7%B3%BB%E7%BB%9F%E4%B8%BB%E8%A6%81%E6%8C%91%E6%88%98%E5%92%8C%E8%AE%BE%E8%AE%A1%E7%90%86%E5%BF%B5"><span class="nav-number">3.2.</span> <span class="nav-text">AI系统主要挑战和设计理念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0%E6%80%9D%E8%B7%AF"><span class="nav-number">3.3.</span> <span class="nav-text">算法实现思路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84-1"><span class="nav-number">3.4.</span> <span class="nav-text">系统架构</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%98%E9%85%B7%E6%8A%80%E6%9C%AF%E5%AE%9E%E8%B7%B5%EF%BC%9A%E8%87%AA%E5%8A%A8%E6%A3%80%E6%B5%8B%E5%8F%8A%E4%BF%AE%E5%A4%8D%E8%A7%86%E9%A2%91%E6%92%AD%E6%94%BE%E5%BC%82%E5%B8%B8"><span class="nav-number">4.</span> <span class="nav-text">优酷技术实践：自动检测及修复视频播放异常</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%82%E5%B8%B8%E6%8C%87%E6%A0%87"><span class="nav-number">4.1.</span> <span class="nav-text">异常指标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E6%95%88%E6%9E%9C"><span class="nav-number">4.2.</span> <span class="nav-text">应用效果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%AA%E6%9D%A5%E8%A7%84%E5%88%92"><span class="nav-number">4.3.</span> <span class="nav-text">未来规划</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Yahoo%E5%A4%A7%E8%A7%84%E6%A8%A1%E6%97%B6%E5%BA%8F%E6%95%B0%E6%8D%AE%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E6%8A%80%E6%9C%AF"><span class="nav-number">5.</span> <span class="nav-text">Yahoo大规模时序数据异常检测技术</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84"><span class="nav-number">5.1.</span> <span class="nav-text">整体架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E7%AE%97%E6%B3%95"><span class="nav-number">5.2.</span> <span class="nav-text">异常检测算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%B6%E5%BA%8F%E6%95%B0%E6%8D%AE%E7%89%B9%E5%BE%81"><span class="nav-number">5.3.</span> <span class="nav-text">时序数据特征</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%B6%E5%BA%8F%E5%BB%BA%E6%A8%A1%E5%92%8C%E6%8C%87%E6%A0%87%E9%80%89%E6%8B%A9"><span class="nav-number">5.4.</span> <span class="nav-text">时序建模和指标选择</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%99%BE%E5%BA%A6%E5%A4%A7%E8%A7%84%E6%A8%A1%E6%97%B6%E5%BA%8F%E6%8C%87%E6%A0%87%E8%87%AA%E5%8A%A8%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E5%AE%9E%E6%88%98"><span class="nav-number">6.</span> <span class="nav-text">百度大规模时序指标自动异常检测实战</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%A4%E4%B8%AA%E6%8C%91%E6%88%98"><span class="nav-number">6.1.</span> <span class="nav-text">两个挑战</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E4%B8%AA%E5%9C%BA%E6%99%AF"><span class="nav-number">6.2.</span> <span class="nav-text">三个场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E9%80%89%E6%8B%A9%E8%87%AA%E5%8A%A8%E5%8C%96"><span class="nav-number">6.3.</span> <span class="nav-text">算法选择自动化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE%E8%87%AA%E5%8A%A8%E5%8C%96"><span class="nav-number">6.4.</span> <span class="nav-text">参数配置自动化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%85%BE%E8%AE%AF%E8%93%9D%E9%B2%B8%E6%95%B0%E6%8D%AE%E5%B9%B3%E5%8F%B0%E4%B9%8B%E5%91%8A%E8%AD%A6%E7%B3%BB%E7%BB%9F"><span class="nav-number">7.</span> <span class="nav-text">腾讯蓝鲸数据平台之告警系统</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%91%E6%8E%A7%E5%AF%B9%E8%B1%A1"><span class="nav-number">7.1.</span> <span class="nav-text">监控对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%91%E6%8E%A7%E6%8C%87%E6%A0%87%E5%92%8C%E7%AD%96%E7%95%A5"><span class="nav-number">7.2.</span> <span class="nav-text">监控指标和策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E6%9B%B2%E7%BA%BF%E5%B9%B3%E6%BB%91%E6%80%A7%E7%9A%84%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B"><span class="nav-number">7.3.</span> <span class="nav-text">基于曲线平滑性的异常检测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E7%BB%9D%E5%AF%B9%E5%80%BC%E7%9A%84%E6%97%B6%E9%97%B4%E5%91%A8%E6%9C%9F%E6%80%A7%E7%9A%84%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B"><span class="nav-number">7.4.</span> <span class="nav-text">基于绝对值的时间周期性的异常检测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E6%8C%AF%E5%B9%85%E7%9A%84%E6%97%B6%E9%97%B4%E5%91%A8%E6%9C%9F%E6%80%A7%E7%9A%84%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B"><span class="nav-number">7.5.</span> <span class="nav-text">基于振幅的时间周期性的异常检测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E6%9B%B2%E7%BA%BF%E5%9B%9E%E5%8D%87%E7%9A%84%E5%BC%82%E5%B8%B8%E5%88%A4%E6%96%AD"><span class="nav-number">7.6.</span> <span class="nav-text">基于曲线回升的异常判断</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%88%B1%E5%A5%87%E8%89%BA%E7%BE%A4%E4%BD%93%E7%94%A8%E6%88%B7%E5%8D%A1%E9%A1%BF%E6%AF%94%E5%BC%82%E5%B8%B8%E8%87%AA%E5%8A%A8%E5%8C%96%E5%A4%84%E7%90%86%E7%B3%BB%E7%BB%9F"><span class="nav-number">8.</span> <span class="nav-text">爱奇艺群体用户卡顿比异常自动化处理系统</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%82%B9%E6%92%AD%E5%8D%A1%E9%A1%BF%E5%8E%9F%E5%9B%A0"><span class="nav-number">8.1.</span> <span class="nav-text">点播卡顿原因</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%A1%E9%A1%BF%E6%AF%94%E6%A6%82%E5%BF%B5"><span class="nav-number">8.2.</span> <span class="nav-text">卡顿比概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%A1%E9%A1%BF%E5%BC%82%E5%B8%B8%E5%88%86%E7%B1%BB"><span class="nav-number">8.3.</span> <span class="nav-text">卡顿异常分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%A1%E9%A1%BF%E6%84%9F%E7%9F%A5%E7%B3%BB%E7%BB%9F"><span class="nav-number">8.4.</span> <span class="nav-text">卡顿感知系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%91%E6%8E%A7%E8%87%AA%E5%8A%A8%E5%8C%96"><span class="nav-number">8.5.</span> <span class="nav-text">监控自动化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%A8%E6%88%B7%E7%A0%94%E7%A9%B6"><span class="nav-number">8.6.</span> <span class="nav-text">用户研究</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%A1%E9%A1%BF%E5%BC%82%E5%B8%B8%E8%87%AA%E5%8A%A8%E5%88%86%E6%9E%90%E7%B3%BB%E7%BB%9F"><span class="nav-number">8.7.</span> <span class="nav-text">卡顿异常自动分析系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E6%88%98%E7%BB%93%E6%9E%9C"><span class="nav-number">8.8.</span> <span class="nav-text">实战结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9C%E4%BF%A1%E6%99%BA%E8%83%BD%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0%E5%BB%BA%E8%AE%BE%E5%AE%9E%E8%B7%B5"><span class="nav-number">9.</span> <span class="nav-text">宜信智能监控平台建设实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%99%BA%E8%83%BD%E8%BF%90%E7%BB%B4%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5"><span class="nav-number">9.1.</span> <span class="nav-text">智能运维工程实践</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E6%A1%86%E6%9E%B6"><span class="nav-number">9.2.</span> <span class="nav-text">异常检测框架</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%A8%E7%BB%B4%E5%BA%A6%E7%9A%84%E6%95%B0%E6%8D%AE%E5%8F%AF%E5%85%B3%E8%81%94"><span class="nav-number">9.3.</span> <span class="nav-text">全维度的数据可关联</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90"><span class="nav-number">9.4.</span> <span class="nav-text">根因分析</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Haoyang Qian"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Haoyang Qian</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/HAQ-13/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;HAQ-13&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:tjuqhy@163.com/" title="E-Mail → mailto:tjuqhy@163.com&#x2F;" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/u/2124719241/" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;u&#x2F;2124719241&#x2F;" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      外部链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/" title="https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank">GitHub</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://fontawesome.dashgame.com/" title="https:&#x2F;&#x2F;fontawesome.dashgame.com&#x2F;" rel="noopener" target="_blank">font-awesome</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://leetcode-cn.com/" title="https:&#x2F;&#x2F;leetcode-cn.com&#x2F;" rel="noopener" target="_blank">Leetcode</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Haoyang Qian</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">7k</span>
+</div>
+
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
