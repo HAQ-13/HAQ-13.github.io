@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"haq-13.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="总结归纳了最近五六年内关于根因分析的主要研究成果，包括清华Netman Lab的HotSpot算法、Squeeze算法，微软亚洲研究院的iDice算法，多维智能下钻分析Adtributor算法和Apriori关联规则挖掘算法等。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AIOps：现有根因分析算法归纳">
+<meta property="og:url" content="https://haq-13.github.io/2020/09/05/AIOps%EF%BC%9A%E7%8E%B0%E6%9C%89%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90%E7%AE%97%E6%B3%95%E5%BD%92%E7%BA%B3/index.html">
+<meta property="og:site_name" content="HAQ13&#39;s Tech Play">
+<meta property="og:description" content="总结归纳了最近五六年内关于根因分析的主要研究成果，包括清华Netman Lab的HotSpot算法、Squeeze算法，微软亚洲研究院的iDice算法，多维智能下钻分析Adtributor算法和Apriori关联规则挖掘算法等。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://haq-13.github.io/2020/09/05/AIOps%EF%BC%9A%E7%8E%B0%E6%9C%89%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90%E7%AE%97%E6%B3%95%E5%BD%92%E7%BA%B3/9.jpeg">
+<meta property="og:image" content="https://haq-13.github.io/2020/09/05/AIOps%EF%BC%9A%E7%8E%B0%E6%9C%89%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90%E7%AE%97%E6%B3%95%E5%BD%92%E7%BA%B3/2.png">
+<meta property="og:image" content="https://haq-13.github.io/2020/09/05/AIOps%EF%BC%9A%E7%8E%B0%E6%9C%89%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90%E7%AE%97%E6%B3%95%E5%BD%92%E7%BA%B3/12.png">
+<meta property="og:image" content="https://haq-13.github.io/2020/09/05/AIOps%EF%BC%9A%E7%8E%B0%E6%9C%89%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90%E7%AE%97%E6%B3%95%E5%BD%92%E7%BA%B3/13.png">
+<meta property="og:image" content="https://haq-13.github.io/2020/09/05/AIOps%EF%BC%9A%E7%8E%B0%E6%9C%89%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90%E7%AE%97%E6%B3%95%E5%BD%92%E7%BA%B3/14.png">
+<meta property="og:image" content="https://haq-13.github.io/2020/09/05/AIOps%EF%BC%9A%E7%8E%B0%E6%9C%89%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90%E7%AE%97%E6%B3%95%E5%BD%92%E7%BA%B3/15.png">
+<meta property="article:published_time" content="2020-09-05T10:51:35.000Z">
+<meta property="article:modified_time" content="2020-09-05T11:41:14.860Z">
+<meta property="article:author" content="Haoyang Qian">
+<meta property="article:tag" content="Root Cause Analysis">
+<meta property="article:tag" content="Algorithm">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://haq-13.github.io/2020/09/05/AIOps%EF%BC%9A%E7%8E%B0%E6%9C%89%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90%E7%AE%97%E6%B3%95%E5%BD%92%E7%BA%B3/9.jpeg">
+
+<link rel="canonical" href="https://haq-13.github.io/2020/09/05/AIOps%EF%BC%9A%E7%8E%B0%E6%9C%89%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90%E7%AE%97%E6%B3%95%E5%BD%92%E7%BA%B3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>AIOps：现有根因分析算法归纳 | HAQ13's Tech Play</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="/custom_css_source.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">HAQ13's Tech Play</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Learning to learn</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://haq-13.github.io/2020/09/05/AIOps%EF%BC%9A%E7%8E%B0%E6%9C%89%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90%E7%AE%97%E6%B3%95%E5%BD%92%E7%BA%B3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Haoyang Qian">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HAQ13's Tech Play">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          AIOps：现有根因分析算法归纳
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-09-05 18:51:35" itemprop="dateCreated datePublished" datetime="2020-09-05T18:51:35+08:00">2020-09-05</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AIOps/" itemprop="url" rel="index"><span itemprop="name">AIOps</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.4k</span>
+            </span>
+            <div class="post-description">总结归纳了最近五六年内关于根因分析的主要研究成果，包括清华Netman Lab的HotSpot算法、Squeeze算法，微软亚洲研究院的iDice算法，多维智能下钻分析Adtributor算法和Apriori关联规则挖掘算法等。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>在清华裴丹教授的带领下，近几年清华Netman实验室在AIOps领域的根因定位和分析方向上成果斐然，已经达到了世界顶尖的水平。<br>自2018年（被称为AIOps元年）以来，运维领域和AI领域愈发密切地结合在一起，智能运维几乎成为一个必然的发展趋势。<br>从人工运维，到自动化运维，再到智能运维，这是企业业务发展之后运维复杂度和体量上升所决定的自然的发展路线。</p>
+</blockquote>
+<h2 id="清华AIOps：蒙特卡洛树搜索定位多维指标异常HotSpot算法"><a href="#清华AIOps：蒙特卡洛树搜索定位多维指标异常HotSpot算法" class="headerlink" title="清华AIOps：蒙特卡洛树搜索定位多维指标异常HotSpot算法"></a>清华AIOps：蒙特卡洛树搜索定位多维指标异常<code>HotSpot</code>算法</h2><h3 id="设计目标"><a href="#设计目标" class="headerlink" title="设计目标"></a>设计目标</h3><p>尽可能准确地找到最大可能的根因集合。</p>
+<h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><p>多维度指标体系中的异常定位问题，实际上是寻找导致总量突变的根因元素集合。归结为一个搜索问题，即如果任意给定一个元素集合都可以判定其有多大可能是根因，则只需遍历搜索可能的集合并计算是根因的可能性，最后挑选出可能性最大集合。</p>
+<h3 id="两个挑战"><a href="#两个挑战" class="headerlink" title="两个挑战"></a>两个挑战</h3><p>主要挑战是搜索空间太大，遍历搜索不可能做到；另一个挑战是准确衡量一个元素或集合是根因的可能性非常困难。</p>
+<h3 id="两个策略"><a href="#两个策略" class="headerlink" title="两个策略"></a>两个策略</h3><p>为了克服两个困难，采用两个策略。</p>
+<ul>
+<li>应用MCTS算法，对于每个cuboid中的元素进行遍历；</li>
+<li>采用分层剪枝的策略，逐层搜索，利用前一层结果对该层剪枝。</li>
+</ul>
+<h3 id="HotSpot算法设计"><a href="#HotSpot算法设计" class="headerlink" title="HotSpot算法设计"></a>HotSpot算法设计</h3><p><code>HotSpot</code>提出了判断一个集合是根因可能性的分数Potential Score。将问题转化为在一个巨大空间的搜索问题后，应用<code>MCTS</code>作为基础搜索算法，并且提出了一个根因可能性评分指标，作为每个集合的度量和MCTS中的价值函数；此外，HotSpot还采用分层剪枝的方法以进一步降低搜索复杂度。<br><img data-src="9.jpeg" alt></p>
+<h3 id="主要环节"><a href="#主要环节" class="headerlink" title="主要环节"></a>主要环节</h3><ol>
+<li>Ripple effect：元素之间互相影响的规则。</li>
+<li>Potential score：用最细粒度所有元素来表征任何一个元素或集合的变化。</li>
+<li>MCTS：启发式算法，找到满足阈值的结果即可停止搜索。</li>
+<li>分层剪枝：HotSpot逐层搜索cuboid，对于前一层中ps过小的元素，将其在本层的子元素剪枝去掉。</li>
+</ol>
+<h3 id="实验验证"><a href="#实验验证" class="headerlink" title="实验验证"></a>实验验证</h3><p>和<code>Adtributor</code>（NSDI 2014）和<code>iDice</code>（ICSE 2016）两种算法对比。HotSpot在所有20类异常实例中都获得了更高的F-score值；随着根因集合中元素数量的增加，iDice的F-score急剧下降；而Adtributor只有第一层异常定位达到了较好的准确性，其余层次中准确性降为0。</p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Kj309bzifIv4j80nZbGVZw">原文：清华AIOps新作:蒙特卡洛树搜索定位多维指标异常</a></p>
+<h2 id="MSRA微软亚洲研究院AIOps多维指标突变定位：iDice"><a href="#MSRA微软亚洲研究院AIOps多维指标突变定位：iDice" class="headerlink" title="MSRA微软亚洲研究院AIOps多维指标突变定位：iDice"></a>MSRA微软亚洲研究院AIOps多维指标突变定位：<code>iDice</code></h2><h3 id="设计目标-1"><a href="#设计目标-1" class="headerlink" title="设计目标"></a>设计目标</h3><p>快速找出导致issue report数量突变的effective combination。</p>
+<h3 id="两个挑战-1"><a href="#两个挑战-1" class="headerlink" title="两个挑战"></a>两个挑战</h3><p>传统查找effective combination的方法是运维工程师利用数据透视表（pivot table）人工进行逐级查找定位。主要有效率低下和有效性差的问题。</p>
+<h3 id="三个需求"><a href="#三个需求" class="headerlink" title="三个需求"></a>三个需求</h3><p>一个effective combination应有影响力、足够的变化量和更少的冗余。</p>
+<h3 id="算法设计"><a href="#算法设计" class="headerlink" title="算法设计"></a>算法设计</h3><p><code>iDice</code>主要由4个需要依次执行的模块构成，分别是impact based pruning、change detection based pruning、isolation power based pruning和result ranking，四个模块都有剪枝功能。其中 <strong>isolation power based pruning</strong> 是本文的主要贡献和创新点。</p>
+<h3 id="主要流程"><a href="#主要流程" class="headerlink" title="主要流程"></a>主要流程</h3><ol>
+<li>Impact based pruning：为了有效减少搜索空间，根据combinations的影响力进行剪枝。</li>
+<li>Change detection based pruning：应用异常检测算法来衡量combination是否显著变化，不显著变化的剪枝删除。</li>
+<li>Isolation power based pruning：将具有变化的combinations与没有变化的其他combinations隔离开来，消除可能存在的冗余。</li>
+<li>Result ranking：根据combinations的相对重要性对它们进行排序，进一步剪枝。</li>
+</ol>
+<h3 id="实验验证-1"><a href="#实验验证-1" class="headerlink" title="实验验证"></a>实验验证</h3><p>与<code>DPMiner</code>算法进行了实验对比，针对两组数据集进行了实验。</p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/JDFpNnW77TJ1HxNfRE6Kig">原文：MSRA AIOps多维指标突变定位: iDice</a></p>
+<h2 id="多维智能下钻分析：Adtributor算法研究"><a href="#多维智能下钻分析：Adtributor算法研究" class="headerlink" title="多维智能下钻分析：Adtributor算法研究"></a>多维智能下钻分析：<code>Adtributor</code>算法研究</h2><h3 id="设计目标-2"><a href="#设计目标-2" class="headerlink" title="设计目标"></a>设计目标</h3><p>对检测出的异常指标进行异常定位和根因分析。</p>
+<h3 id="三个难点"><a href="#三个难点" class="headerlink" title="三个难点"></a>三个难点</h3><ul>
+<li>对于每一个维度，元素集合能够尽可能地解释KPI异常波动；</li>
+<li>对于每一个维度，元素集合符合奥卡姆剃刀原则；</li>
+<li>在所有维度中，找出最令人意外的维度和元素。</li>
+</ul>
+<h3 id="算法设计-1"><a href="#算法设计-1" class="headerlink" title="算法设计"></a>算法设计</h3><p>算法主要思路如图。<br><img data-src="2.png" alt><br>核心思想是将多维根因分析问题分解为多个单维根因分析问题，采用EP值和S值定位出每个维度下的异常元素集合，最后根据每个维度总的S值大小汇总输出根因集合。</p>
+<h3 id="结果评估"><a href="#结果评估" class="headerlink" title="结果评估"></a>结果评估</h3><p>收集某国际企业广告系统的数据，针对12个指标进行异常检测和根因分析。准确性可达95.3%，与具有丰富运维经验的领域专家水平接近，远高于<code>Strawman</code>算法的20%。运行速度上，对于相同异常指标，人工排查根因平均用时在73分钟，<code>Adtributor</code>算法根因分析平均为3分钟左右。</p>
+<h3 id="算法改进"><a href="#算法改进" class="headerlink" title="算法改进"></a>算法改进</h3><p>未来在不稳定维度和可视化加强两个方向进行改进。</p>
+<p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1644348">原文：多维智能下钻分析—Adtributor算法研究</a></p>
+<h2 id="Squeeze：清华Netman-Lab对HotSpot算法的改进"><a href="#Squeeze：清华Netman-Lab对HotSpot算法的改进" class="headerlink" title="Squeeze：清华Netman Lab对HotSpot算法的改进"></a><code>Squeeze</code>：清华Netman Lab对HotSpot算法的改进</h2><h3 id="设计目标-3"><a href="#设计目标-3" class="headerlink" title="设计目标"></a>设计目标</h3><ul>
+<li>没有不实际的猜想；</li>
+<li>同时处理基础维度和人工提取维度；</li>
+<li>处理任何变化幅度的异常；</li>
+<li>不需要人工调参；</li>
+<li>在所有情况中都保持高性能。</li>
+</ul>
+<h3 id="和HotSpot的异同"><a href="#和HotSpot的异同" class="headerlink" title="和HotSpot的异同"></a>和HotSpot的异同</h3><p>基本思想还是立足于ripple effect和potential score，但是都做了改进。在搜索potential score最大的维度组合的方法上是完全不同的。</p>
+<h3 id="根因分析算法对比"><a href="#根因分析算法对比" class="headerlink" title="根因分析算法对比"></a>根因分析算法对比</h3><p><img data-src="12.png" alt></p>
+<h3 id="算法设计-2"><a href="#算法设计-2" class="headerlink" title="算法设计"></a>算法设计</h3><p><code>Squeeze</code>算法推断那些导致一样变化的元素在同一个cuboid中。设计思想是改良的ripple effect和改良的potential score。不仅有top to bottom的搜索也有bottom to top的搜索，直到找到中间的根因。</p>
+<h3 id="总体架构"><a href="#总体架构" class="headerlink" title="总体架构"></a>总体架构</h3><p><img data-src="13.png" alt></p>
+<p><a target="_blank" rel="noopener" href="https://netman.aiops.org/wp-content/uploads/2019/08/camera_ready.pdf">原文：Generic and Robust Localization of Multi-Dimensional Root Causes</a></p>
+<h2 id="Apriori关联规则挖掘算法"><a href="#Apriori关联规则挖掘算法" class="headerlink" title="Apriori关联规则挖掘算法"></a><code>Apriori</code>关联规则挖掘算法</h2><h3 id="设计目标-4"><a href="#设计目标-4" class="headerlink" title="设计目标"></a>设计目标</h3><p>检测定位端到端服务性能下降的根因。</p>
+<h3 id="设计亮点"><a href="#设计亮点" class="headerlink" title="设计亮点"></a>设计亮点</h3><p>用关联规则挖掘来定位性能下降的根因。</p>
+<h3 id="挑战和解决思路"><a href="#挑战和解决思路" class="headerlink" title="挑战和解决思路"></a>挑战和解决思路</h3><ol>
+<li>模型准确性和模型复杂度的平衡和解决数据稀疏的问题；为此，建立了基准线模型去识别有明显不同表现的数据。</li>
+<li>要定位端到端性能下降问题；为此，使用了关联规则挖掘来总结出一些规则。</li>
+<li>要量化方法的有效性；为此，给端到端性能下降例子做了人工检测，并且加入了一些人造的性能下降的例子。</li>
+</ol>
+<h3 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h3><p>全部64例人造异常数据在90%置信度时都被成功检测定位到了；结果显示在80%例子中，异常的根源都不是出于移动网络的问题；检测了2个真实世界异常数据，一个根因定位包含3维度，一个包含4维度，模型总共4维度。</p>
+<p><a target="_blank" rel="noopener" href="https://www.cse.msu.edu/~farazah/detect_infocom16.pdf">原文：Detecting and Localizing End-to-End Performance Degradation for Cellular Data Services
+</a></p>
+<h2 id="异常检测和错误定位：对Adtributor和HotSpot的简单改进"><a href="#异常检测和错误定位：对Adtributor和HotSpot的简单改进" class="headerlink" title="异常检测和错误定位：对Adtributor和HotSpot的简单改进"></a>异常检测和错误定位：对Adtributor和HotSpot的简单改进</h2><h3 id="设计目标-5"><a href="#设计目标-5" class="headerlink" title="设计目标"></a>设计目标</h3><p>建立一个找出时序异常并逼近可能根因集合的自动化流程。</p>
+<h3 id="算法设计-3"><a href="#算法设计-3" class="headerlink" title="算法设计"></a>算法设计</h3><p>针对Adtributor和HotSpot的现有限制，分别进行改进以改进表现。<br><code>Revised HotSpot</code>：原始HosSpot算法只选择最高可能性的那一个集合作为根因展示，因为原作者认为在现实中不同分区的集合同时出现根因是非常稀少的，但是在实际测试集中显示了这种情况确实存在，这可能是由于不同领域的数据的不同属性导致的。为了克服这个问题，本文展示了top3的可能性集合，同时改动了部分公式。<br><img data-src="14.png" alt><br><code>Recursive Adtributor</code>：原始Adtributor算法独立地观察每个维度，递归Adtributor算法则能够为多维度的不同集合使用，递归地在不同候选集合的subcubes上应用此算法。每次应用此算法，新的候选集合就被保存作为新subcube的属性，最后形成一个树结构。<br><code>Revised Recursive Adtributor</code>：对一些阈值的改动，使得原有算法的一些丢失相关集合的风险降低。将HostSpot的核心思想ripple effect应用到了revised adtributor算法上。<br><img data-src="15.png" alt></p>
+<h3 id="实验结果-1"><a href="#实验结果-1" class="headerlink" title="实验结果"></a>实验结果</h3><p>在准确率和召回率分数上普遍高于或等于Recursive Adtributor算法和HotSpot算法。</p>
+<p><a target="_blank" rel="noopener" href="https://odr.chalmers.se/bitstream/20.500.12380/256407/1/256407.pdf">原文：Anomaly Detection and Fault Localization</a></p>
+
+    </div>
+    <!-- 文章结束表示语-->
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paint-brush"></i>感谢阅读-------------</div>
+    
+</div>
+      
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>喜欢就请打个赏吧^_^</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="Haoyang Qian 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="Haoyang Qian 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Root-Cause-Analysis/" rel="tag"><i class="fa fa-tag"></i> Root Cause Analysis</a>
+              <a href="/tags/Algorithm/" rel="tag"><i class="fa fa-tag"></i> Algorithm</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/09/05/AIOps%EF%BC%9A%E5%9F%BA%E4%BA%8E%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E7%9A%84%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E7%AE%97%E6%B3%95/" rel="prev" title="AIOps：基于时间序列的异常检测算法">
+      <i class="fa fa-chevron-left"></i> AIOps：基于时间序列的异常检测算法
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B8%85%E5%8D%8EAIOps%EF%BC%9A%E8%92%99%E7%89%B9%E5%8D%A1%E6%B4%9B%E6%A0%91%E6%90%9C%E7%B4%A2%E5%AE%9A%E4%BD%8D%E5%A4%9A%E7%BB%B4%E6%8C%87%E6%A0%87%E5%BC%82%E5%B8%B8HotSpot%E7%AE%97%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">清华AIOps：蒙特卡洛树搜索定位多维指标异常HotSpot算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E7%9B%AE%E6%A0%87"><span class="nav-number">1.1.</span> <span class="nav-text">设计目标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%9D%E8%B7%AF"><span class="nav-number">1.2.</span> <span class="nav-text">思路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%A4%E4%B8%AA%E6%8C%91%E6%88%98"><span class="nav-number">1.3.</span> <span class="nav-text">两个挑战</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%A4%E4%B8%AA%E7%AD%96%E7%95%A5"><span class="nav-number">1.4.</span> <span class="nav-text">两个策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HotSpot%E7%AE%97%E6%B3%95%E8%AE%BE%E8%AE%A1"><span class="nav-number">1.5.</span> <span class="nav-text">HotSpot算法设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E7%8E%AF%E8%8A%82"><span class="nav-number">1.6.</span> <span class="nav-text">主要环节</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E9%AA%8C%E8%AF%81"><span class="nav-number">1.7.</span> <span class="nav-text">实验验证</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MSRA%E5%BE%AE%E8%BD%AF%E4%BA%9A%E6%B4%B2%E7%A0%94%E7%A9%B6%E9%99%A2AIOps%E5%A4%9A%E7%BB%B4%E6%8C%87%E6%A0%87%E7%AA%81%E5%8F%98%E5%AE%9A%E4%BD%8D%EF%BC%9AiDice"><span class="nav-number">2.</span> <span class="nav-text">MSRA微软亚洲研究院AIOps多维指标突变定位：iDice</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E7%9B%AE%E6%A0%87-1"><span class="nav-number">2.1.</span> <span class="nav-text">设计目标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%A4%E4%B8%AA%E6%8C%91%E6%88%98-1"><span class="nav-number">2.2.</span> <span class="nav-text">两个挑战</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E4%B8%AA%E9%9C%80%E6%B1%82"><span class="nav-number">2.3.</span> <span class="nav-text">三个需求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E8%AE%BE%E8%AE%A1"><span class="nav-number">2.4.</span> <span class="nav-text">算法设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E6%B5%81%E7%A8%8B"><span class="nav-number">2.5.</span> <span class="nav-text">主要流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E9%AA%8C%E8%AF%81-1"><span class="nav-number">2.6.</span> <span class="nav-text">实验验证</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E7%BB%B4%E6%99%BA%E8%83%BD%E4%B8%8B%E9%92%BB%E5%88%86%E6%9E%90%EF%BC%9AAdtributor%E7%AE%97%E6%B3%95%E7%A0%94%E7%A9%B6"><span class="nav-number">3.</span> <span class="nav-text">多维智能下钻分析：Adtributor算法研究</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E7%9B%AE%E6%A0%87-2"><span class="nav-number">3.1.</span> <span class="nav-text">设计目标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E4%B8%AA%E9%9A%BE%E7%82%B9"><span class="nav-number">3.2.</span> <span class="nav-text">三个难点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E8%AE%BE%E8%AE%A1-1"><span class="nav-number">3.3.</span> <span class="nav-text">算法设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E6%9E%9C%E8%AF%84%E4%BC%B0"><span class="nav-number">3.4.</span> <span class="nav-text">结果评估</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E6%94%B9%E8%BF%9B"><span class="nav-number">3.5.</span> <span class="nav-text">算法改进</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Squeeze%EF%BC%9A%E6%B8%85%E5%8D%8ENetman-Lab%E5%AF%B9HotSpot%E7%AE%97%E6%B3%95%E7%9A%84%E6%94%B9%E8%BF%9B"><span class="nav-number">4.</span> <span class="nav-text">Squeeze：清华Netman Lab对HotSpot算法的改进</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E7%9B%AE%E6%A0%87-3"><span class="nav-number">4.1.</span> <span class="nav-text">设计目标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%92%8CHotSpot%E7%9A%84%E5%BC%82%E5%90%8C"><span class="nav-number">4.2.</span> <span class="nav-text">和HotSpot的异同</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90%E7%AE%97%E6%B3%95%E5%AF%B9%E6%AF%94"><span class="nav-number">4.3.</span> <span class="nav-text">根因分析算法对比</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E8%AE%BE%E8%AE%A1-2"><span class="nav-number">4.4.</span> <span class="nav-text">算法设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E4%BD%93%E6%9E%B6%E6%9E%84"><span class="nav-number">4.5.</span> <span class="nav-text">总体架构</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Apriori%E5%85%B3%E8%81%94%E8%A7%84%E5%88%99%E6%8C%96%E6%8E%98%E7%AE%97%E6%B3%95"><span class="nav-number">5.</span> <span class="nav-text">Apriori关联规则挖掘算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E7%9B%AE%E6%A0%87-4"><span class="nav-number">5.1.</span> <span class="nav-text">设计目标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E4%BA%AE%E7%82%B9"><span class="nav-number">5.2.</span> <span class="nav-text">设计亮点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%91%E6%88%98%E5%92%8C%E8%A7%A3%E5%86%B3%E6%80%9D%E8%B7%AF"><span class="nav-number">5.3.</span> <span class="nav-text">挑战和解决思路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C"><span class="nav-number">5.4.</span> <span class="nav-text">实验结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E5%92%8C%E9%94%99%E8%AF%AF%E5%AE%9A%E4%BD%8D%EF%BC%9A%E5%AF%B9Adtributor%E5%92%8CHotSpot%E7%9A%84%E7%AE%80%E5%8D%95%E6%94%B9%E8%BF%9B"><span class="nav-number">6.</span> <span class="nav-text">异常检测和错误定位：对Adtributor和HotSpot的简单改进</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E7%9B%AE%E6%A0%87-5"><span class="nav-number">6.1.</span> <span class="nav-text">设计目标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E8%AE%BE%E8%AE%A1-3"><span class="nav-number">6.2.</span> <span class="nav-text">算法设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C-1"><span class="nav-number">6.3.</span> <span class="nav-text">实验结果</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Haoyang Qian"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Haoyang Qian</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/HAQ-13/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;HAQ-13&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:tjuqhy@163.com/" title="E-Mail → mailto:tjuqhy@163.com&#x2F;" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/u/2124719241/" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;u&#x2F;2124719241&#x2F;" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      外部链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/" title="https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank">GitHub</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://fontawesome.dashgame.com/" title="https:&#x2F;&#x2F;fontawesome.dashgame.com&#x2F;" rel="noopener" target="_blank">font-awesome</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://leetcode-cn.com/" title="https:&#x2F;&#x2F;leetcode-cn.com&#x2F;" rel="noopener" target="_blank">Leetcode</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Haoyang Qian</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">11k</span>
+</div>
+
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
