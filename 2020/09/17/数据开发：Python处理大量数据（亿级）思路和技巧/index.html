@@ -30,9 +30,8 @@
 <meta property="og:image" content="https://haq-13.github.io/2020/09/17/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9APython%E5%A4%84%E7%90%86%E5%A4%A7%E9%87%8F%E6%95%B0%E6%8D%AE%EF%BC%88%E4%BA%BF%E7%BA%A7%EF%BC%89%E6%80%9D%E8%B7%AF%E5%92%8C%E6%8A%80%E5%B7%A7/5.jpeg">
 <meta property="og:image" content="https://haq-13.github.io/2020/09/17/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9APython%E5%A4%84%E7%90%86%E5%A4%A7%E9%87%8F%E6%95%B0%E6%8D%AE%EF%BC%88%E4%BA%BF%E7%BA%A7%EF%BC%89%E6%80%9D%E8%B7%AF%E5%92%8C%E6%8A%80%E5%B7%A7/6.jpeg">
 <meta property="og:image" content="https://haq-13.github.io/2020/09/17/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9APython%E5%A4%84%E7%90%86%E5%A4%A7%E9%87%8F%E6%95%B0%E6%8D%AE%EF%BC%88%E4%BA%BF%E7%BA%A7%EF%BC%89%E6%80%9D%E8%B7%AF%E5%92%8C%E6%8A%80%E5%B7%A7/2.jpeg">
-<meta property="og:image" content="https://haq-13.github.io/2020/09/17/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9APython%E5%A4%84%E7%90%86%E5%A4%A7%E9%87%8F%E6%95%B0%E6%8D%AE%EF%BC%88%E4%BA%BF%E7%BA%A7%EF%BC%89%E6%80%9D%E8%B7%AF%E5%92%8C%E6%8A%80%E5%B7%A7/1.jpeg">
 <meta property="article:published_time" content="2020-09-17T13:24:57.000Z">
-<meta property="article:modified_time" content="2020-09-17T14:08:00.540Z">
+<meta property="article:modified_time" content="2020-09-25T11:27:02.212Z">
 <meta property="article:author" content="Haoyang Qian">
 <meta property="article:tag" content="Python">
 <meta property="article:tag" content="Jupyter Notebook">
@@ -269,14 +268,14 @@
 <li>Pandas特性上，如果能用<code>.apply()</code>方法、矢量化操作，往往能节省很可观的时间。</li>
 <li>NumPy方面，由于Pandas的DataFrame本身就是基于NumPy库的，所以一些NumPy库的高性能操作也能作用于DataFrame上。</li>
 </ol>
-<p>基于这次数据本身特点，我选择删去了不需要的列，以及限定了所选列的数据类型，确实在时间上有大幅度的提升。最后接近3亿条的数据只用了12分钟就读取完毕。<br><img data-src="2.jpeg" alt="限定前后读取速度"><br><img data-src="1.jpeg" alt="最后处理方法"></p>
+<p>基于这次数据本身特点，我选择删去了不需要的列，以及限定了所选列的数据类型，确实在时间上有大幅度的提升。最后接近3亿条的数据只用了12分钟就读取完毕。<br><img data-src="2.jpeg" alt="限定前后读取速度"></p>
 <p>那两天我也有看到别人处理大文件时会用到分块处理的方法，分块读取再concat为一个整体。我有些疑惑的是，一个大文件的分块读取再合并和多个较小文件的读取再合并除了迭代器有哪些区别呢，迭代器的效率能提升多少呢？这就等下次时间更充裕的时候去尝试比较吧。</p>
 <h2 id="绕坑之法"><a href="#绕坑之法" class="headerlink" title="绕坑之法"></a>绕坑之法</h2><ol>
 <li>大量数据（亿级以上）的时候，要非常谨慎地使用效率不高的方法，非常关键。</li>
 <li>多个大csv文件，可以用csvkit提前做简单处理。</li>
 <li>读取时限定数据类型和列名，大幅减少不必要的空间占用。</li>
 <li>文件格式可以转换为更高性能的HDF5格式再进行后续处理。</li>
-<li>使用Pandas的高效方法如<code>.apply()</code>方法、矢量化操作。</li>
+<li>使用Pandas的高效方法如.apply()方法、矢量化操作。</li>
 <li>使用NumPy的一些高效方法。</li>
 <li>最根本的是深入了解数据，了解自己要做什么，才能找到对应的适合自己的方法。</li>
 </ol>
