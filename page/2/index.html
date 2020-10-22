@@ -20,37 +20,31 @@
     var CONFIG = {"hostname":"haq-13.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="对量值KPI进行阈值筛选去掉弱权重根因的影响，对不完整的时间序列进行条件筛选去除不完整性带来的错误根因问题。">
-<meta property="og:type" content="article">
-<meta property="og:title" content="数据开发：权重阈值和时间序列完整度">
-<meta property="og:url" content="https://haq-13.github.io/2020/10/17/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E6%9D%83%E9%87%8D%E9%98%88%E5%80%BC%E5%92%8C%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E5%AE%8C%E6%95%B4%E5%BA%A6/index.html">
+  <meta name="description" content="做自己的光.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="空白墙">
+<meta property="og:url" content="https://haq-13.github.io/page/2/index.html">
 <meta property="og:site_name" content="空白墙">
-<meta property="og:description" content="对量值KPI进行阈值筛选去掉弱权重根因的影响，对不完整的时间序列进行条件筛选去除不完整性带来的错误根因问题。">
+<meta property="og:description" content="做自己的光.">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-10-17T05:53:51.000Z">
-<meta property="article:modified_time" content="2020-10-17T05:57:30.418Z">
 <meta property="article:author" content="Haoyang Qian">
-<meta property="article:tag" content="Time Series Analysis">
-<meta property="article:tag" content="Root Cause Analysis">
-<meta property="article:tag" content="Video Buffering">
-<meta property="article:tag" content="Weight">
-<meta property="article:tag" content="Threshold">
+<meta property="article:tag" content="Big data; Software development; Business analysis; AI; Data mining.">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://haq-13.github.io/2020/10/17/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E6%9D%83%E9%87%8D%E9%98%88%E5%80%BC%E5%92%8C%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E5%AE%8C%E6%95%B4%E5%BA%A6/">
+<link rel="canonical" href="https://haq-13.github.io/page/2/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : false,
-    isPost : true,
+    isHome : true,
+    isPost : false,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>数据开发：权重阈值和时间序列完整度 | 空白墙</title>
+  <title>空白墙</title>
   
 
 
@@ -169,14 +163,13 @@
         <div class="content-wrap">
           
 
-          <div class="content post posts-expand">
+          <div class="content index posts-expand">
             
-
-    
+      
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://haq-13.github.io/2020/10/17/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E6%9D%83%E9%87%8D%E9%98%88%E5%80%BC%E5%92%8C%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E5%AE%8C%E6%95%B4%E5%BA%A6/">
+    <link itemprop="mainEntityOfPage" href="https://haq-13.github.io/2020/09/01/Notes%EF%BC%9AHello-Hexo/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -188,9 +181,10 @@
       <meta itemprop="name" content="空白墙">
     </span>
       <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          数据开发：权重阈值和时间序列完整度
-        </h1>
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/09/01/Notes%EF%BC%9AHello-Hexo/" class="post-title-link" itemprop="url">Notes：Hello Hexo</a>
+        </h2>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -199,7 +193,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2020-10-17 13:53:51" itemprop="dateCreated datePublished" datetime="2020-10-17T13:53:51+08:00">2020-10-17</time>
+              <time title="创建时间：2020-09-01 00:30:37" itemprop="dateCreated datePublished" datetime="2020-09-01T00:30:37+08:00">2020-09-01</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -207,30 +201,18 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">数据开发</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91/%E5%8D%A1%E9%A1%BF%E6%A0%B9%E5%9B%A0/" itemprop="url" rel="index"><span itemprop="name">卡顿根因</span></a>
+                  <a href="/categories/Notes/" itemprop="url" rel="index"><span itemprop="name">Notes</span></a>
                 </span>
             </span>
 
-          
-            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span id="busuanzi_value_page_pv"></span>
-            </span><br>
+          <br>
             <span class="post-meta-item" title="本文字数">
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.6k</span>
+              <span>1.2k</span>
             </span>
-            <div class="post-description">对量值KPI进行阈值筛选去掉弱权重根因的影响，对不完整的时间序列进行条件筛选去除不完整性带来的错误根因问题。</div>
 
         </div>
       </header>
@@ -241,137 +223,38 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <blockquote>
-<p>这一周的工作让人明白，对算法问题，不可接受的耗时才是阻碍生产力的第一障碍。在算法耗时很短的情况下，对于不同情况分别进行多种尝试就可以比较容易地进行试错和得到一些有益结论。同时，想要提升算法效果，关键是找到能改进的细节再去针对问题设计解决方案。思路比实现的难度大多了。</p>
-</blockquote>
-<h2 id="量值KPI阈值N值的设定"><a href="#量值KPI阈值N值的设定" class="headerlink" title="量值KPI阈值N值的设定"></a>量值KPI阈值N值的设定</h2><p>现有根因集合结果对N值的选取比较敏感，从现在的结果看，在没排除干扰项的情况下，按’每天’聚合的时候，N在400到1000的时候表现比较好。</p>
-<ol>
-<li><p>N值设置高的话，可以只留下高权重的根因集合，但是也会使得留下的候选根因过于少，从而遗失信息和改变信息而错过真实根因。按’每天’聚合的数据看，N&gt;1000的时候待分析的候选根因集合数量小于100，其中真实值是非0值的数量更少。</p>
-</li>
-<li><p>N值设置低的话，会导致一条时间序列上部分时间点有数据部分没数据自动补为0，这样预测值和真实值的差距会很大，很容易出现在根因分析时筛选出来的结果根因里，干扰和污染分析结果。按’每天’聚合的数据看，N&lt;400的时候得出的结果根因集合很不稳定，经常出现错误根因出现在结果中。</p>
-</li>
-<li><p>如果根据当天量值KPI总数确定一个比例来决定阈值N，也会面临问题。因为量值KPI总量随时间点的波动也很大，当异常时间点的数据量过小或过大，就会使得N值的选择不在合适范围内，导致上面提到的问题。</p>
-</li>
-<li><p>考虑用异常测试点前数天的数据总量的一个比例来决定阈值N，比直接用当天的数据量会好些，数据点被筛选掉的情况会减少。根据现在的MA算法，用的是时间点前5个点位的平均数，所以考虑每5天buffer_vv总和的平均值。经计算，最近三个月的每5天buffer_vv平均值最低为90540，最高为186274.2。当比例选定为千分之五，也就是0.005时，阈值N最小为452.7，最大为931.4，区间在上面提到的（400，1000）里，在没排除干扰项的情况下0.005是一个比较合理的数字。</p>
-</li>
-<li><p>根据另一个量值KPI做权重筛选没有比现有量值KPI更好，因为他们两个的波动相似，都很剧烈，所以他们两个做权重筛选的效果是相似的。</p>
-</li>
-</ol>
-<h2 id="干扰项的排除（时间序列不完整性问题）"><a href="#干扰项的排除（时间序列不完整性问题）" class="headerlink" title="干扰项的排除（时间序列不完整性问题）"></a>干扰项的排除（时间序列不完整性问题）</h2><p>为了不让干扰项、错误根因出现在结果中，在用N值筛选完数据后进行一个时间序列完整度的判断和处理，主要是用于MA预测的时间段需要保持数据的完整性，不然很可能影响结果准确性。</p>
-<ol>
-<li>主要进行了一个条件筛选，筛选掉部分时间序列不完整的可能干扰到最终结果的候选根因集合：<ul>
-<li>分析点位真实值为0的删去；</li>
-<li>分析点位前5天数据真实值有缺失的删去（因为MA的window为5）；</li>
-<li>分析点位预测值过小的删去；</li>
-<li>分析点位预测值远大于真实值的删去（说明的是前几天数据的连续异常而不是当前点位的异常，不考虑在当前点位分析前面时间段）。</li>
-</ul>
-</li>
-</ol>
-<ol>
-<li>在排除干扰项后，就可以考虑将上面提到的决定阈值N的比例适当调小，因为此时已经不再有之前的时间序列不完整性问题。在调小之后，去做聚类分析的数据点位就能增加，以增加出现其他根因集合结果的可能性。当比例调整为万分之五时，此时阈值N最小为45.3，最大为93.1。在测试数据中，确实起到了增加结果根因集合的作用，但是增加了一些影响力较弱的根因。当比例再调整为千分之一和千分之二时，千分之二时的结果更稳定些。千分之二时，阈值N最小为181.2，最大为372.4，进入根因分析算法的候选根因集合为68条。</li>
-</ol>
-<h2 id="降维维度组合的设定"><a href="#降维维度组合的设定" class="headerlink" title="降维维度组合的设定"></a>降维维度组合的设定</h2><h3 id="从省份运营商角度："><a href="#从省份运营商角度：" class="headerlink" title="从省份运营商角度："></a>从省份运营商角度：</h3><ul>
-<li>省份+运营商</li>
-<li>运营商+cdn厂家</li>
-<li>省份+运营商+cdn厂家</li>
-<li>省份+运营商+是否跨省+是否跨运营商</li>
-<li>省份+运营商+cdn厂家+是否跨省+是否跨运营商</li>
-</ul>
-<h3 id="从产品角度："><a href="#从产品角度：" class="headerlink" title="从产品角度："></a>从产品角度：</h3><ul>
-<li>版本+清晰度</li>
-<li>版本+清晰度+视频格式</li>
-</ul>
-<h3 id="交叉角度："><a href="#交叉角度：" class="headerlink" title="交叉角度："></a>交叉角度：</h3><ul>
-<li>运营商+cdn厂家+版本</li>
-<li>运营商+cdn厂家+清晰度</li>
-<li>省份+运营商+版本</li>
-<li>省份+运营商+清晰度</li>
-</ul>
-<h2 id="真实根因判定"><a href="#真实根因判定" class="headerlink" title="真实根因判定"></a>真实根因判定</h2><p>通过根因分析算法得出的几个分数最高的根因集合可以再进行单独的时间序列分析，查看比较实际时间序列曲线、数据和预测时间序列曲线、数据，可以一定程度上判定是否属于真实根因。</p>
-
+          <p>一个初学者的自白。为什么要写博客，为什么选择Hexo，以及为什么选择GitHub Pages。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/09/01/Notes%EF%BC%9AHello-Hexo/">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
     </div>
     <!-- 文章结束表示语-->
     <div>
       
-        <div>
-    
-        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paint-brush"></i>感谢阅读-------------</div>
-    
-</div>
-      
     </div>
 
     
     
     
-        <div class="reward-container">
-  <div>喜欢就请打个赏吧^_^</div>
-  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
-    打赏
-  </button>
-  <div id="qr" style="display: none;">
-      
-      <div style="display: inline-block;">
-        <img src="/images/wechatpay.png" alt="Haoyang Qian 微信支付">
-        <p>微信支付</p>
-      </div>
-      
-      <div style="display: inline-block;">
-        <img src="/images/alipay.png" alt="Haoyang Qian 支付宝">
-        <p>支付宝</p>
-      </div>
-
-  </div>
-</div>
-
-        
-
-<div>
-<ul class="post-copyright">
-  <li class="post-copyright-author">
-    <strong>本文作者： </strong>Haoyang Qian
-  </li>
-  <li class="post-copyright-link">
-    <strong>本文链接：</strong>
-    <a href="https://haq-13.github.io/2020/10/17/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E6%9D%83%E9%87%8D%E9%98%88%E5%80%BC%E5%92%8C%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E5%AE%8C%E6%95%B4%E5%BA%A6/" title="数据开发：权重阈值和时间序列完整度">https://haq-13.github.io/2020/10/17/数据开发：权重阈值和时间序列完整度/</a>
-  </li>
-  <li class="post-copyright-license">
-    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
-  </li>
-</ul>
-</div>
-
-
       <footer class="post-footer">
-          
-          <div class="post-tags">
-              <a href="/tags/Time-Series-Analysis/" rel="tag"><i class="fa fa-tag"></i> Time Series Analysis</a>
-              <a href="/tags/Root-Cause-Analysis/" rel="tag"><i class="fa fa-tag"></i> Root Cause Analysis</a>
-              <a href="/tags/Video-Buffering/" rel="tag"><i class="fa fa-tag"></i> Video Buffering</a>
-              <a href="/tags/Weight/" rel="tag"><i class="fa fa-tag"></i> Weight</a>
-              <a href="/tags/Threshold/" rel="tag"><i class="fa fa-tag"></i> Threshold</a>
-          </div>
-
-        
-
-
-        
-    <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2020/10/14/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E9%99%8D%E7%BB%B4%E8%A7%92%E5%BA%A6%E5%92%8C%E6%9D%83%E9%87%8D%E8%80%83%E8%99%91/" rel="prev" title="数据开发：降维角度和权重考虑">
-      <i class="fa fa-chevron-left"></i> 数据开发：降维角度和权重考虑
-    </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/10/20/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E5%8F%82%E6%95%B0%E7%BD%91%E6%A0%BC%E5%92%8C%E6%A0%B9%E5%9B%A0%E9%A2%91%E6%AC%A1/" rel="next" title="数据开发：参数网格和根因频次">
-      数据开发：参数网格和根因频次 <i class="fa fa-chevron-right"></i>
-    </a></div>
-    </div>
+        <div class="post-eof"></div>
       </footer>
-    
   </article>
   
   
   
+
+
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+  </nav>
 
 
 
@@ -423,7 +306,6 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8F%E5%80%BCKPI%E9%98%88%E5%80%BCN%E5%80%BC%E7%9A%84%E8%AE%BE%E5%AE%9A"><span class="nav-number">1.</span> <span class="nav-text">量值KPI阈值N值的设定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B9%B2%E6%89%B0%E9%A1%B9%E7%9A%84%E6%8E%92%E9%99%A4%EF%BC%88%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E4%B8%8D%E5%AE%8C%E6%95%B4%E6%80%A7%E9%97%AE%E9%A2%98%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">干扰项的排除（时间序列不完整性问题）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%8D%E7%BB%B4%E7%BB%B4%E5%BA%A6%E7%BB%84%E5%90%88%E7%9A%84%E8%AE%BE%E5%AE%9A"><span class="nav-number">3.</span> <span class="nav-text">降维维度组合的设定</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8E%E7%9C%81%E4%BB%BD%E8%BF%90%E8%90%A5%E5%95%86%E8%A7%92%E5%BA%A6%EF%BC%9A"><span class="nav-number">3.1.</span> <span class="nav-text">从省份运营商角度：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8E%E4%BA%A7%E5%93%81%E8%A7%92%E5%BA%A6%EF%BC%9A"><span class="nav-number">3.2.</span> <span class="nav-text">从产品角度：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%A4%E5%8F%89%E8%A7%92%E5%BA%A6%EF%BC%9A"><span class="nav-number">3.3.</span> <span class="nav-text">交叉角度：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9C%9F%E5%AE%9E%E6%A0%B9%E5%9B%A0%E5%88%A4%E5%AE%9A"><span class="nav-number">4.</span> <span class="nav-text">真实根因判定</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
