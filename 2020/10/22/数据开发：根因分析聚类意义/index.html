@@ -28,7 +28,7 @@
 <meta property="og:description" content="对Squeeze算法中聚类作用和意义的分析。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-10-22T14:18:08.000Z">
-<meta property="article:modified_time" content="2020-10-22T14:19:11.224Z">
+<meta property="article:modified_time" content="2020-10-26T13:03:14.119Z">
 <meta property="article:author" content="Haoyang Qian">
 <meta property="article:tag" content="Root Cause Analysis">
 <meta property="article:tag" content="Video Buffering">
@@ -226,7 +226,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>977</span>
+              <span>980</span>
             </span>
             <div class="post-description">对Squeeze算法中聚类作用和意义的分析。</div>
 
@@ -247,7 +247,7 @@
 <h3 id="聚类"><a href="#聚类" class="headerlink" title="聚类"></a>聚类</h3><p>之所以要进行聚类，而没有直接在此时对每个组合进行GPS分数计算，除了担心耗时问题之外，还担心叶子结点的根因集合（比如分析三维度数据时的三维度元素根因集合就是叶子结点根因结集合）不是真正的根因。虽然根据现有时间粒度和候选根因数量，不用担心根因分析耗时问题，但是根因准确性会受到影响。比如当真正的根因是（广东，电信）时，直接根据过滤的结果进行计算和排序，可能是（广东，电信，华为）排在第一，也可能是别的三维度叶子结点根因排在第一，此时GPS的计算因为没有类簇而会在整个搜索空间进行，把不同的根因混合在了一起，影响了结果。</p>
 <p>同时，根据GRE效应，相同根因的所有叶子结点拥有相似的偏差值分数，所以将相似偏差值聚类到相同类簇里，此时认为同一个类簇里的叶子结点是被相同根因影响的。</p>
 <p>此外，聚类的结果也影响到了GPS分数计算的结果，决定了GPS公式中选用的两个集合分别是什么（Set1是这个类簇中异常叶子结点根因的集合，Set2是所有正常叶子结点的集合）。</p>
-<h3 id="定位"><a href="#定位" class="headerlink" title="定位"></a>定位</h3><p>在聚类之后，需要在类簇里进行真实异常根因的定位工作，这也是聚类的部分意义所在。每一个类簇是一个可能的根因，对每一个类簇进行真实根因的分析。分析是由顶至底的。对每一个维度，从第一层（也就是一维）开始计算当层有效根因集合的GPS值，并得到最大GPS值，如果此时最大GPS值小于theta阈值，进入下一层的循环，否则将对应根因添加到根因集合列表，且停止搜索下一层，返回一个综合分数<code>score * C - n_ele * cuboid_layer</code>最高的根因集合，然后进入下一个类簇的循环。也就是说，一个类簇里的所有叶子结点根因集合，最多得出一个综合分数最高的异常根因集合，这是最后根因集合数量受限制的原因，也是二维结果（广东，电信）比三维结果出现频次更多的原因。</p>
+<h3 id="定位"><a href="#定位" class="headerlink" title="定位"></a>定位</h3><p>在聚类之后，需要在类簇里进行真实异常根因的定位工作，这也是聚类的部分意义所在。每一个类簇是一个可能的根因，对每一个类簇进行真实根因的分析。分析是由顶至底的。对每一个维度，从第一层（也就是一维）开始计算当层有效根因集合的GPS值，并得到最大GPS值，如果此时最大GPS值小于 $\Theta$ 阈值，进入下一层的循环，否则将对应根因添加到根因集合列表，且停止搜索下一层，返回一个综合分数<code>score * C - n_ele * cuboid_layer</code>最高的根因集合，然后进入下一个类簇的循环。也就是说，一个类簇里的所有叶子结点根因集合，最多得出一个综合分数最高的异常根因集合，这是最后根因集合数量受限制的原因，也是二维结果（广东，电信）比三维结果出现频次更多的原因。</p>
 
     </div>
     <!-- 文章结束表示语-->
@@ -563,6 +563,59 @@
   
 
   
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
 
   
 
