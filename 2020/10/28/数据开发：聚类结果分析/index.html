@@ -20,18 +20,24 @@
     var CONFIG = {"hostname":"haq-13.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="做自己的光.">
-<meta property="og:type" content="website">
-<meta property="og:title" content="空白墙">
-<meta property="og:url" content="https://haq-13.github.io/archives/page/2/index.html">
+  <meta name="description" content="对聚类的类簇数量和类簇中根因集合的分析。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据开发：聚类结果分析">
+<meta property="og:url" content="https://haq-13.github.io/2020/10/28/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E8%81%9A%E7%B1%BB%E7%BB%93%E6%9E%9C%E5%88%86%E6%9E%90/index.html">
 <meta property="og:site_name" content="空白墙">
-<meta property="og:description" content="做自己的光.">
+<meta property="og:description" content="对聚类的类簇数量和类簇中根因集合的分析。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://haq-13.github.io/2020/10/28/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E8%81%9A%E7%B1%BB%E7%BB%93%E6%9E%9C%E5%88%86%E6%9E%90/1.png">
+<meta property="article:published_time" content="2020-10-28T12:41:37.000Z">
+<meta property="article:modified_time" content="2020-10-28T12:42:28.843Z">
 <meta property="article:author" content="Haoyang Qian">
-<meta property="article:tag" content="Big data; Software development; Business analysis; AI; Data mining.">
+<meta property="article:tag" content="Root Cause Analysis">
+<meta property="article:tag" content="Video Buffering">
+<meta property="article:tag" content="Clustering">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://haq-13.github.io/2020/10/28/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E8%81%9A%E7%B1%BB%E7%BB%93%E6%9E%9C%E5%88%86%E6%9E%90/1.png">
 
-<link rel="canonical" href="https://haq-13.github.io/archives/page/2/">
+<link rel="canonical" href="https://haq-13.github.io/2020/10/28/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E8%81%9A%E7%B1%BB%E7%BB%93%E6%9E%9C%E5%88%86%E6%9E%90/">
 
 
 <script id="page-configurations">
@@ -39,12 +45,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>归档 | 空白墙</title>
+  <title>数据开发：聚类结果分析 | 空白墙</title>
   
 
 
@@ -163,94 +169,171 @@
         <div class="content-wrap">
           
 
-          <div class="content archive">
+          <div class="content post posts-expand">
             
 
+    
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <span class="collection-header">嗯..! 目前共计 13 篇日志。 继续努力。</span>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://haq-13.github.io/2020/10/28/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E8%81%9A%E7%B1%BB%E7%BB%93%E6%9E%9C%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Haoyang Qian">
+      <meta itemprop="description" content="做自己的光.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="空白墙">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数据开发：聚类结果分析
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-10-28 20:41:37" itemprop="dateCreated datePublished" datetime="2020-10-28T20:41:37+08:00">2020-10-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">数据开发</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91/%E5%8D%A1%E9%A1%BF%E6%A0%B9%E5%9B%A0/" itemprop="url" rel="index"><span itemprop="name">卡顿根因</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.1k</span>
+            </span>
+            <div class="post-description">对聚类的类簇数量和类簇中根因集合的分析。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2020</span>
-    </div>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-09-05T10:35:44+08:00"
-              content="2020-09-05">
-          09-05
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/09/05/AIOps%EF%BC%9A%E5%9F%BA%E4%BA%8E%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E7%9A%84%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E7%AE%97%E6%B3%95/" itemprop="url">
-            <span itemprop="name">AIOps：基于时间序列的异常检测算法</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-09-03T21:40:18+08:00"
-              content="2020-09-03">
-          09-03
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/09/03/AIOps%EF%BC%9A%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E5%92%8C%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90%E8%B0%83%E7%A0%94%E4%B9%8B%E9%83%A8%E5%88%86%E5%B9%B3%E5%8F%B0%E6%9E%B6%E6%9E%84/" itemprop="url">
-            <span itemprop="name">AIOps：异常检测和根因分析调研之部分平台架构</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-09-01T00:30:37+08:00"
-              content="2020-09-01">
-          09-01
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/09/01/Notes%EF%BC%9AHello-Hexo/" itemprop="url">
-            <span itemprop="name">Notes：Hello Hexo</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
+        <h2 id="聚类结果分析"><a href="#聚类结果分析" class="headerlink" title="聚类结果分析"></a>聚类结果分析</h2><p>直接进行下钻和Squeeze的结合没能改进结果，所以考虑通过改良聚类结果。</p>
+<p>因为偏差值阈值thre是影响聚类结果的重要因素，又由于现有候选根因数量不多，根据thre筛选掉正常值留下的异常叶子结点数量更少，可以直接观察不同thre时聚类的每个类簇里都有哪些候选根因集合。通过观察类簇中的叶子结点，来得出一些有益结论。</p>
+<h3 id="thre为0-9时"><a href="#thre为0-9时" class="headerlink" title="thre为0.9时"></a>thre为0.9时</h3><p>此时只剩一条叶子结点通过了阈值筛选，只有一个类簇。</p>
+<h3 id="thre为0-5时"><a href="#thre为0-5时" class="headerlink" title="thre为0.5时"></a>thre为0.5时</h3><p>此时总共5条叶子结点通过了阈值筛选，分为两个类簇，两个类簇的可能根因集合分别是（广东，电信，华为）和（广东，电信）。因为我们希望得到广东电信其他第三方的异常情况，所以在改进聚类时，要做到能把这两个类簇里的叶子结点全部作为根因集合输出。</p>
+<h3 id="thre为0-2时"><a href="#thre为0-2时" class="headerlink" title="thre为0.2时"></a>thre为0.2时</h3><p>此时有三个类簇，第一个类簇的可能根因是（广东，电信，华为），第二个类簇的可能根因是（广东，电信），第三个类簇的叶子结点不够统一，可能根因会是其中分数最高且超过GPS分数的叶子结点。</p>
+<h3 id="thre为0-1时"><a href="#thre为0-1时" class="headerlink" title="thre为0.1时"></a>thre为0.1时</h3><p>此时有三个类簇，前两个还是和上面一致，第三个类簇增加了很多叶子结点。</p>
+<h3 id="thre为0-01时"><a href="#thre为0-01时" class="headerlink" title="thre为0.01时"></a>thre为0.01时</h3><p>此时三个类簇，前两个和上面一致，第三个类簇再次多了一些叶子结点。</p>
+<h2 id="聚类输出结果调整"><a href="#聚类输出结果调整" class="headerlink" title="聚类输出结果调整"></a>聚类输出结果调整</h2><p>Squeeze论文中对于根因有一个推测：导致了相同异常幅度（即聚类时分到了一个类簇中）的根因的属性组合在一个cuboid里。在现实情况里，导致相同异常幅度的根因属性组合来自不止一个cuboid的情况是较罕见的。</p>
+<p><img data-src="1.png" alt></p>
+<p>Cuboid是有着相同元素值的属性组合的集合，比如（电信）的cuboid，就是ISP为电信时的所有子集合。</p>
+<p>在10月9日的数据中，第二个类簇的情况就是他们都属于（广东，电信）这一cuboid。想要改变聚类的规则，出现全部分数较高的根因候选，首先想到的是聚类将结果计算并排序后不只进行最高分数与阈值theta的比较，而是希望用前几个根因组合的得分与阈值theta比较，输出其中符合条件的，而不是最多一个类簇只输出一个。</p>
+<p>对10月9日数据进行分析，通过聚类，有3个类簇，每个类簇中分析得到的根因组合和对应分数、所在层数。</p>
+<p>根据算法取得每个类簇中得分最高的一个根因组合作为可能根因，总共3个。</p>
+<p>现在在三个类簇的结果里，都出现了layer为3，也就是第三层的计算结果。这说明之所以没出现（广东，电信）其他第三方的结果，是因为在第三层的计算时，其他第三方的结果没有出现比之前已有根因更大的分数，在分数判断比较时，被筛选掉了。所以考虑在自顶向下的判断时，改变筛选判断的条件，以得到其他影响力较弱的根因集合。</p>
 
     </div>
+    <!-- 文章结束表示语-->
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paint-brush"></i>感谢阅读-------------</div>
+    
+</div>
+      
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>喜欢就请打个赏吧^_^</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="Haoyang Qian 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="Haoyang Qian 支付宝">
+        <p>支付宝</p>
+      </div>
+
   </div>
-  
-  
-  
+</div>
 
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Haoyang Qian
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://haq-13.github.io/2020/10/28/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E8%81%9A%E7%B1%BB%E7%BB%93%E6%9E%9C%E5%88%86%E6%9E%90/" title="数据开发：聚类结果分析">https://haq-13.github.io/2020/10/28/数据开发：聚类结果分析/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Root-Cause-Analysis/" rel="tag"><i class="fa fa-tag"></i> Root Cause Analysis</a>
+              <a href="/tags/Video-Buffering/" rel="tag"><i class="fa fa-tag"></i> Video Buffering</a>
+              <a href="/tags/Clustering/" rel="tag"><i class="fa fa-tag"></i> Clustering</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/10/22/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E7%BB%B4%E5%BA%A6%E4%B8%8B%E9%92%BB/" rel="prev" title="数据开发：维度下钻">
+      <i class="fa fa-chevron-left"></i> 数据开发：维度下钻
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
   
-  <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/archives/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/archives/">1</a><span class="page-number current">2</span>
-  </nav>
+  
+  
 
 
 
@@ -302,6 +385,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%81%9A%E7%B1%BB%E7%BB%93%E6%9E%9C%E5%88%86%E6%9E%90"><span class="nav-number">1.</span> <span class="nav-text">聚类结果分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#thre%E4%B8%BA0-9%E6%97%B6"><span class="nav-number">1.1.</span> <span class="nav-text">thre为0.9时</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#thre%E4%B8%BA0-5%E6%97%B6"><span class="nav-number">1.2.</span> <span class="nav-text">thre为0.5时</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#thre%E4%B8%BA0-2%E6%97%B6"><span class="nav-number">1.3.</span> <span class="nav-text">thre为0.2时</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#thre%E4%B8%BA0-1%E6%97%B6"><span class="nav-number">1.4.</span> <span class="nav-text">thre为0.1时</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#thre%E4%B8%BA0-01%E6%97%B6"><span class="nav-number">1.5.</span> <span class="nav-text">thre为0.01时</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%81%9A%E7%B1%BB%E8%BE%93%E5%87%BA%E7%BB%93%E6%9E%9C%E8%B0%83%E6%95%B4"><span class="nav-number">2.</span> <span class="nav-text">聚类输出结果调整</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
