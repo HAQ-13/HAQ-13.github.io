@@ -20,25 +20,27 @@
     var CONFIG = {"hostname":"haq-13.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="对基于时间序列的异常检测算法的部分归纳，不包括具体细节，只包括算法思考方向和大致特点，具体内容根据需要再做了解。">
+  <meta name="description" content="根据现有需求对聚类结果进行一些优化。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="AIOps：基于时间序列的异常检测算法">
-<meta property="og:url" content="https://haq-13.github.io/2020/09/05/AIOps%EF%BC%9A%E5%9F%BA%E4%BA%8E%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E7%9A%84%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E7%AE%97%E6%B3%95/index.html">
+<meta property="og:title" content="数据开发：聚类结果优化">
+<meta property="og:url" content="https://haq-13.github.io/2020/10/30/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E8%81%9A%E7%B1%BB%E7%BB%93%E6%9E%9C%E4%BC%98%E5%8C%96/index.html">
 <meta property="og:site_name" content="空白墙">
-<meta property="og:description" content="对基于时间序列的异常检测算法的部分归纳，不包括具体细节，只包括算法思考方向和大致特点，具体内容根据需要再做了解。">
+<meta property="og:description" content="根据现有需求对聚类结果进行一些优化。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://haq-13.github.io/2020/09/05/AIOps%EF%BC%9A%E5%9F%BA%E4%BA%8E%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E7%9A%84%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E7%AE%97%E6%B3%95/20.png">
-<meta property="og:image" content="https://haq-13.github.io/2020/09/05/AIOps%EF%BC%9A%E5%9F%BA%E4%BA%8E%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E7%9A%84%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E7%AE%97%E6%B3%95/21.png">
-<meta property="article:published_time" content="2020-09-05T02:35:44.000Z">
-<meta property="article:modified_time" content="2020-10-15T16:07:10.313Z">
+<meta property="og:image" content="https://haq-13.github.io/2020/10/30/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E8%81%9A%E7%B1%BB%E7%BB%93%E6%9E%9C%E4%BC%98%E5%8C%96/1.png">
+<meta property="og:image" content="https://haq-13.github.io/2020/10/30/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E8%81%9A%E7%B1%BB%E7%BB%93%E6%9E%9C%E4%BC%98%E5%8C%96/2.png">
+<meta property="og:image" content="https://haq-13.github.io/2020/10/30/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E8%81%9A%E7%B1%BB%E7%BB%93%E6%9E%9C%E4%BC%98%E5%8C%96/3.png">
+<meta property="article:published_time" content="2020-10-29T16:06:23.000Z">
+<meta property="article:modified_time" content="2020-10-29T16:08:07.285Z">
 <meta property="article:author" content="Haoyang Qian">
-<meta property="article:tag" content="Algorithm">
-<meta property="article:tag" content="Anomaly Detection">
-<meta property="article:tag" content="Time Series Analysis">
+<meta property="article:tag" content="Root Cause Analysis">
+<meta property="article:tag" content="Video Buffering">
+<meta property="article:tag" content="Optimization">
+<meta property="article:tag" content="Clustering">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://haq-13.github.io/2020/09/05/AIOps%EF%BC%9A%E5%9F%BA%E4%BA%8E%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E7%9A%84%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E7%AE%97%E6%B3%95/20.png">
+<meta name="twitter:image" content="https://haq-13.github.io/2020/10/30/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E8%81%9A%E7%B1%BB%E7%BB%93%E6%9E%9C%E4%BC%98%E5%8C%96/1.png">
 
-<link rel="canonical" href="https://haq-13.github.io/2020/09/05/AIOps%EF%BC%9A%E5%9F%BA%E4%BA%8E%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E7%9A%84%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E7%AE%97%E6%B3%95/">
+<link rel="canonical" href="https://haq-13.github.io/2020/10/30/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E8%81%9A%E7%B1%BB%E7%BB%93%E6%9E%9C%E4%BC%98%E5%8C%96/">
 
 
 <script id="page-configurations">
@@ -51,7 +53,7 @@
   };
 </script>
 
-  <title>AIOps：基于时间序列的异常检测算法 | 空白墙</title>
+  <title>数据开发：聚类结果优化 | 空白墙</title>
   
 
 
@@ -177,7 +179,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://haq-13.github.io/2020/09/05/AIOps%EF%BC%9A%E5%9F%BA%E4%BA%8E%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E7%9A%84%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E7%AE%97%E6%B3%95/">
+    <link itemprop="mainEntityOfPage" href="https://haq-13.github.io/2020/10/30/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E8%81%9A%E7%B1%BB%E7%BB%93%E6%9E%9C%E4%BC%98%E5%8C%96/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -190,7 +192,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          AIOps：基于时间序列的异常检测算法
+          数据开发：聚类结果优化
         </h1>
 
         <div class="post-meta">
@@ -200,7 +202,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2020-09-05 10:35:44" itemprop="dateCreated datePublished" datetime="2020-09-05T10:35:44+08:00">2020-09-05</time>
+              <time title="创建时间：2020-10-30 00:06:23" itemprop="dateCreated datePublished" datetime="2020-10-30T00:06:23+08:00">2020-10-30</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -208,11 +210,11 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/AIOps/" itemprop="url" rel="index"><span itemprop="name">AIOps</span></a>
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">数据开发</span></a>
                 </span>
                   ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/AIOps/%E5%8D%A1%E9%A1%BF%E6%A0%B9%E5%9B%A0/" itemprop="url" rel="index"><span itemprop="name">卡顿根因</span></a>
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91/%E5%8D%A1%E9%A1%BF%E6%A0%B9%E5%9B%A0/" itemprop="url" rel="index"><span itemprop="name">卡顿根因</span></a>
                 </span>
             </span>
 
@@ -229,9 +231,9 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.5k</span>
+              <span>1k</span>
             </span>
-            <div class="post-description">对基于时间序列的异常检测算法的部分归纳，不包括具体细节，只包括算法思考方向和大致特点，具体内容根据需要再做了解。</div>
+            <div class="post-description">根据现有需求对聚类结果进行一些优化。</div>
 
         </div>
       </header>
@@ -243,36 +245,185 @@
 
       
         <blockquote>
-<p>在异常检测的实践中，时间序列是一个很重要的概念，因为大多数平台的数据仓库都存储了时间序列数据。此时，检测异常就是检测不同性质的时间序列上的异常点或异常区间，根因分析的基础就是异常检测和基于异常检测算法的数值预测。</p>
+<p>再针对聚类算法对根因分析结果进行一些优化，准备部署到线上自动化运行。</p>
 </blockquote>
-<h2 id="基于模型的方法"><a href="#基于模型的方法" class="headerlink" title="基于模型的方法"></a>基于模型的方法</h2><p>统计方法，主要通过拟合单个模型或多个模型来判断该点的概率。</p>
-<ul>
-<li>单维情况：3σ法则，箱型图，Grubbs测试。</li>
-<li>高维情况：Mahalanobis距离，卡方统计，单个/混合高斯分布</li>
-</ul>
-<h2 id="基于距离-临近度的方法"><a href="#基于距离-临近度的方法" class="headerlink" title="基于距离/临近度的方法"></a>基于距离/临近度的方法</h2><p>计算复杂度过高，且分布不均匀的点容易出错。<br>基于角度的离群点检测，k最近邻，LOF（Local Outlier Factor），COF（Connectivity Outlier Factor），Stochastic Outlier Selection Algorithm（无监督）。</p>
-<h2 id="基于密度的方法"><a href="#基于密度的方法" class="headerlink" title="基于密度的方法"></a>基于密度的方法</h2><p>一个数据对象的密度等于半径为d的邻域内的数据对象数。</p>
-<h2 id="基于聚类的方法"><a href="#基于聚类的方法" class="headerlink" title="基于聚类的方法"></a>基于聚类的方法</h2><p>丢弃远离其他簇的小簇。</p>
-<h2 id="基于划分的方法"><a href="#基于划分的方法" class="headerlink" title="基于划分的方法"></a>基于划分的方法</h2><p>孤立森林。划分成树，深度越低，说明越容易被划分，即为离群点。</p>
-<h2 id="基于线性的方法"><a href="#基于线性的方法" class="headerlink" title="基于线性的方法"></a>基于线性的方法</h2><p>PCA（Principal Component Analysis）。</p>
-<h2 id="基于非线性的方法"><a href="#基于非线性的方法" class="headerlink" title="基于非线性的方法"></a>基于非线性的方法</h2><p>RNNs（Replicator Neural Networks），AE（AutoEncoder），VAE（Variational AutoEncoder）。</p>
-<h2 id="针对非数值型的方法"><a href="#针对非数值型的方法" class="headerlink" title="针对非数值型的方法"></a>针对非数值型的方法</h2><p>Attribute Value Frequency。</p>
-<h2 id="基于深度学习的方法"><a href="#基于深度学习的方法" class="headerlink" title="基于深度学习的方法"></a>基于深度学习的方法</h2><p>衡量模型的不确定性的贝叶斯深度网络。</p>
-<h2 id="基于时间序列的异常检测方法"><a href="#基于时间序列的异常检测方法" class="headerlink" title="基于时间序列的异常检测方法"></a>基于时间序列的异常检测方法</h2><p>短期环比（SS），长期环比（LS），同比（chain），同比振幅（CA），算法组合，相空间重构，其他方法。</p>
-<h2 id="短期环比"><a href="#短期环比" class="headerlink" title="短期环比"></a>短期环比</h2><ul>
-<li>窗口统计特征：3-sigma，z-score，Grubbs格拉斯测试，moving average（移动平均），cumulative moving average（累加移动平均），weighted moving average（加权移动平均），exponential weighted moving average（指数加权移动平均），double exponential smoothing（双指数平滑），triple exponential smoothing（三指数平滑，Holt-Winters），std-dev from average（平均值-标准差），std-dev from moving average（移动平均-标准差），std-dev from ewma（指数加权移动平均-标准差），histogram bins，median absolute deviation（中位数绝对偏差），median of deviation（MAD），mean subtraction cumulation，first hour average（前若干-平均值）。</li>
-<li>窗口熵特征：描述时间序列确定性和不确定性以区分时间序列。</li>
-<li>窗口分段特征：通过分段线性逼近、分段聚合逼近、分段常数逼近等进行数据降维，用少量数据进行原始时间序列的表示。</li>
-<li>窗口总特征：时间窗口特征+OneHot特征+Timestamp所属星期作为特征，label选取时间窗口中间点的标签。</li>
-</ul>
-<h2 id="长期环比"><a href="#长期环比" class="headerlink" title="长期环比"></a>长期环比</h2><p>通过拟合和EWMA等进行趋势判断。</p>
-<h2 id="同比"><a href="#同比" class="headerlink" title="同比"></a>同比</h2><p>针对周期性曲线使用，辅助预测。</p>
-<h2 id="同比振幅"><a href="#同比振幅" class="headerlink" title="同比振幅"></a>同比振幅</h2><p>检测一些同比无法检测出的异常情况。</p>
-<h2 id="算法组合"><a href="#算法组合" class="headerlink" title="算法组合"></a>算法组合</h2><h3 id="判断周期性"><a href="#判断周期性" class="headerlink" title="判断周期性"></a>判断周期性</h3><p><img data-src="20.png" alt></p>
-<h3 id="不区分周期性"><a href="#不区分周期性" class="headerlink" title="不区分周期性"></a>不区分周期性</h3><p><img data-src="21.png" alt></p>
-<h2 id="其他方法"><a href="#其他方法" class="headerlink" title="其他方法"></a>其他方法</h2><p>Smoothed z-score algorithm。利用历史窗口针对下个节点做预测；对异常点的数值进行平滑以评估下个点是否为异常点。</p>
-<h2 id="相空间重构"><a href="#相空间重构" class="headerlink" title="相空间重构"></a>相空间重构</h2><p>混沌时间序列的处理。</p>
-<p><a target="_blank" rel="noopener" href="http://blog.rexking6.top/2018/11/05/%E5%9F%BA%E4%BA%8E%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E7%9A%84%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B/">原文：基于时间序列的异常检测</a></p>
+<h2 id="聚类结果优化"><a href="#聚类结果优化" class="headerlink" title="聚类结果优化"></a>聚类结果优化</h2><p>原来的聚类算法是基于密度的聚类，但是是根据中心点和边界点确定类簇的左右边界，在每个中心点的左右根据边界点位的值去判断边界。</p>
+<p>现有聚类算法，也是基于密度的聚类。分类的依据在于连续非零区间和deviation分数值，每一个被筛选出来的候选异常根因集合都有一个deviation值，根据deviation值在不同区间出现的频次绘制如下histogram图，可以看到此时（bins为40时）类簇很明显的被分为了3个类簇。具体进行聚类时，也是基于这样的思想，把频次连续非零的区间划分到一个类簇中去。</p>
+<p>现有算法在聚类的效果上要好于原先基于centers和boundaries的聚类算法，因为原来按各个中心点来分类，容易将相同根因导致的异常根因集合分配到不同类簇中去，从而计算不出真正根因集合。</p>
+<p>现有基于连续非零区间的算法对bins的值比较敏感，可以调整bins值来决定聚类的粗细粒度。</p>
+<h3 id="bins为40时，3个类簇"><a href="#bins为40时，3个类簇" class="headerlink" title="bins为40时，3个类簇"></a>bins为40时，3个类簇</h3><p><img data-src="1.png" alt></p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">根因集合</th>
+<th style="text-align:center">频次</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">（广东，电信）</td>
+<td style="text-align:center">132</td>
+</tr>
+<tr>
+<td style="text-align:center">（广东，华为）</td>
+<td style="text-align:center">64</td>
+</tr>
+<tr>
+<td style="text-align:center">（广东，电信，华为）</td>
+<td style="text-align:center">64</td>
+</tr>
+<tr>
+<td style="text-align:center">（广东，电信，七牛）</td>
+<td style="text-align:center">49</td>
+</tr>
+<tr>
+<td style="text-align:center">（广东，电信，腾讯）</td>
+<td style="text-align:center">42</td>
+</tr>
+<tr>
+<td style="text-align:center">（电信）</td>
+<td style="text-align:center">39</td>
+</tr>
+<tr>
+<td style="text-align:center">（mCDN）</td>
+<td style="text-align:center">21</td>
+</tr>
+<tr>
+<td style="text-align:center">（上海，电信，华为）</td>
+<td style="text-align:center">19</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="bins为80时，4个类簇"><a href="#bins为80时，4个类簇" class="headerlink" title="bins为80时，4个类簇"></a>bins为80时，4个类簇</h3><p><img data-src="2.png" alt></p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">根因集合</th>
+<th style="text-align:center">频次</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">（广东，电信）</td>
+<td style="text-align:center">156</td>
+</tr>
+<tr>
+<td style="text-align:center">（广东，华为）</td>
+<td style="text-align:center">64</td>
+</tr>
+<tr>
+<td style="text-align:center">（广东，金山）</td>
+<td style="text-align:center">64</td>
+</tr>
+<tr>
+<td style="text-align:center">（广东，电信，华为）</td>
+<td style="text-align:center">64</td>
+</tr>
+<tr>
+<td style="text-align:center">（广东，电信，金山）</td>
+<td style="text-align:center">64</td>
+</tr>
+<tr>
+<td style="text-align:center">（广东，电信，腾讯）</td>
+<td style="text-align:center">49</td>
+</tr>
+<tr>
+<td style="text-align:center">（电信）</td>
+<td style="text-align:center">45</td>
+</tr>
+<tr>
+<td style="text-align:center">（广东，other）</td>
+<td style="text-align:center">35</td>
+</tr>
+<tr>
+<td style="text-align:center">（电信，other）</td>
+<td style="text-align:center">30</td>
+</tr>
+<tr>
+<td style="text-align:center">（mCDN）</td>
+<td style="text-align:center">21</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="bins为160时，6个类簇"><a href="#bins为160时，6个类簇" class="headerlink" title="bins为160时，6个类簇"></a>bins为160时，6个类簇</h3><p><img data-src="3.png" alt></p>
+<p>由于bins在160的时候，thre在过小的时候数据会出错，将搜索空间从8<em>8调整到4</em>8=32个，此时根因频次结果如下。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">根因集合</th>
+<th style="text-align:center">频次</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">（广东，电信）</td>
+<td style="text-align:center">108</td>
+</tr>
+<tr>
+<td style="text-align:center">（广东，华为）</td>
+<td style="text-align:center">32</td>
+</tr>
+<tr>
+<td style="text-align:center">（广东，金山）</td>
+<td style="text-align:center">32</td>
+</tr>
+<tr>
+<td style="text-align:center">（广东，other）</td>
+<td style="text-align:center">32</td>
+</tr>
+<tr>
+<td style="text-align:center">（广东，电信，华为）</td>
+<td style="text-align:center">64</td>
+</tr>
+<tr>
+<td style="text-align:center">（广东，电信，金山）</td>
+<td style="text-align:center">64</td>
+</tr>
+<tr>
+<td style="text-align:center">（广东，电信，七牛）</td>
+<td style="text-align:center">28</td>
+</tr>
+<tr>
+<td style="text-align:center">（广东，电信，腾讯）</td>
+<td style="text-align:center">24</td>
+</tr>
+<tr>
+<td style="text-align:center">（山西，移动，bcache）</td>
+<td style="text-align:center">24</td>
+</tr>
+<tr>
+<td style="text-align:center">（电信）</td>
+<td style="text-align:center">23</td>
+</tr>
+<tr>
+<td style="text-align:center">（电信，腾讯）</td>
+<td style="text-align:center">18</td>
+</tr>
+<tr>
+<td style="text-align:center">（上海，华为）</td>
+<td style="text-align:center">18</td>
+</tr>
+<tr>
+<td style="text-align:center">（山西，移动）</td>
+<td style="text-align:center">18</td>
+</tr>
+<tr>
+<td style="text-align:center">（山东，电信，bcache）</td>
+<td style="text-align:center">14</td>
+</tr>
+<tr>
+<td style="text-align:center">（山东，电信）</td>
+<td style="text-align:center">11</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>从给出信息量大小的角度来说，bins更高时能给出的信息量更多。在bins为160时，（广东，电信）的第三方相关的根因集合都能被分析出来。同时，因为聚类得出的类簇更多，有6个类簇，能分析出的其他影响力较弱的根因集合也更多。根据现有需求，bins为160时给出的根因分析结果更完整。</p>
 
     </div>
     <!-- 文章结束表示语-->
@@ -318,7 +469,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://haq-13.github.io/2020/09/05/AIOps%EF%BC%9A%E5%9F%BA%E4%BA%8E%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E7%9A%84%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E7%AE%97%E6%B3%95/" title="AIOps：基于时间序列的异常检测算法">https://haq-13.github.io/2020/09/05/AIOps：基于时间序列的异常检测算法/</a>
+    <a href="https://haq-13.github.io/2020/10/30/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E8%81%9A%E7%B1%BB%E7%BB%93%E6%9E%9C%E4%BC%98%E5%8C%96/" title="数据开发：聚类结果优化">https://haq-13.github.io/2020/10/30/数据开发：聚类结果优化/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -330,9 +481,10 @@
       <footer class="post-footer">
           
           <div class="post-tags">
-              <a href="/tags/Algorithm/" rel="tag"><i class="fa fa-tag"></i> Algorithm</a>
-              <a href="/tags/Anomaly-Detection/" rel="tag"><i class="fa fa-tag"></i> Anomaly Detection</a>
-              <a href="/tags/Time-Series-Analysis/" rel="tag"><i class="fa fa-tag"></i> Time Series Analysis</a>
+              <a href="/tags/Root-Cause-Analysis/" rel="tag"><i class="fa fa-tag"></i> Root Cause Analysis</a>
+              <a href="/tags/Video-Buffering/" rel="tag"><i class="fa fa-tag"></i> Video Buffering</a>
+              <a href="/tags/Optimization/" rel="tag"><i class="fa fa-tag"></i> Optimization</a>
+              <a href="/tags/Clustering/" rel="tag"><i class="fa fa-tag"></i> Clustering</a>
           </div>
 
         
@@ -341,13 +493,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/09/03/AIOps%EF%BC%9A%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E5%92%8C%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90%E8%B0%83%E7%A0%94%E4%B9%8B%E9%83%A8%E5%88%86%E5%B9%B3%E5%8F%B0%E6%9E%B6%E6%9E%84/" rel="prev" title="AIOps：异常检测和根因分析调研之部分平台架构">
-      <i class="fa fa-chevron-left"></i> AIOps：异常检测和根因分析调研之部分平台架构
+    <a href="/2020/10/28/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E6%A0%B9%E5%9B%A0%E7%BB%93%E6%9E%9C%E8%B0%83%E4%BC%98/" rel="prev" title="数据开发：根因结果调优">
+      <i class="fa fa-chevron-left"></i> 数据开发：根因结果调优
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/09/05/AIOps%EF%BC%9A%E7%8E%B0%E6%9C%89%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90%E7%AE%97%E6%B3%95%E5%BD%92%E7%BA%B3/" rel="next" title="AIOps：现有根因分析算法归纳">
-      AIOps：现有根因分析算法归纳 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -406,7 +555,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">基于模型的方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E8%B7%9D%E7%A6%BB-%E4%B8%B4%E8%BF%91%E5%BA%A6%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">基于距离&#x2F;临近度的方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E5%AF%86%E5%BA%A6%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">基于密度的方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E8%81%9A%E7%B1%BB%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text">基于聚类的方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E5%88%92%E5%88%86%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">5.</span> <span class="nav-text">基于划分的方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E7%BA%BF%E6%80%A7%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">6.</span> <span class="nav-text">基于线性的方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E9%9D%9E%E7%BA%BF%E6%80%A7%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">7.</span> <span class="nav-text">基于非线性的方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%92%88%E5%AF%B9%E9%9D%9E%E6%95%B0%E5%80%BC%E5%9E%8B%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">8.</span> <span class="nav-text">针对非数值型的方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">9.</span> <span class="nav-text">基于深度学习的方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E7%9A%84%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E6%96%B9%E6%B3%95"><span class="nav-number">10.</span> <span class="nav-text">基于时间序列的异常检测方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9F%AD%E6%9C%9F%E7%8E%AF%E6%AF%94"><span class="nav-number">11.</span> <span class="nav-text">短期环比</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%95%BF%E6%9C%9F%E7%8E%AF%E6%AF%94"><span class="nav-number">12.</span> <span class="nav-text">长期环比</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8C%E6%AF%94"><span class="nav-number">13.</span> <span class="nav-text">同比</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8C%E6%AF%94%E6%8C%AF%E5%B9%85"><span class="nav-number">14.</span> <span class="nav-text">同比振幅</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E7%BB%84%E5%90%88"><span class="nav-number">15.</span> <span class="nav-text">算法组合</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A4%E6%96%AD%E5%91%A8%E6%9C%9F%E6%80%A7"><span class="nav-number">15.1.</span> <span class="nav-text">判断周期性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E5%8C%BA%E5%88%86%E5%91%A8%E6%9C%9F%E6%80%A7"><span class="nav-number">15.2.</span> <span class="nav-text">不区分周期性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E6%96%B9%E6%B3%95"><span class="nav-number">16.</span> <span class="nav-text">其他方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E7%A9%BA%E9%97%B4%E9%87%8D%E6%9E%84"><span class="nav-number">17.</span> <span class="nav-text">相空间重构</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%81%9A%E7%B1%BB%E7%BB%93%E6%9E%9C%E4%BC%98%E5%8C%96"><span class="nav-number">1.</span> <span class="nav-text">聚类结果优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#bins%E4%B8%BA40%E6%97%B6%EF%BC%8C3%E4%B8%AA%E7%B1%BB%E7%B0%87"><span class="nav-number">1.1.</span> <span class="nav-text">bins为40时，3个类簇</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#bins%E4%B8%BA80%E6%97%B6%EF%BC%8C4%E4%B8%AA%E7%B1%BB%E7%B0%87"><span class="nav-number">1.2.</span> <span class="nav-text">bins为80时，4个类簇</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#bins%E4%B8%BA160%E6%97%B6%EF%BC%8C6%E4%B8%AA%E7%B1%BB%E7%B0%87"><span class="nav-number">1.3.</span> <span class="nav-text">bins为160时，6个类簇</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
