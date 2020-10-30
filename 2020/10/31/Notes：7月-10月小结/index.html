@@ -20,18 +20,23 @@
     var CONFIG = {"hostname":"haq-13.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="做自己的光.">
-<meta property="og:type" content="website">
-<meta property="og:title" content="空白墙">
-<meta property="og:url" content="https://haq-13.github.io/archives/2020/10/index.html">
+  <meta name="description" content="做视频卡顿根因分析项目两个月的一点个人小结，和其他一些感想。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Notes：7月-10月小结">
+<meta property="og:url" content="https://haq-13.github.io/2020/10/31/Notes%EF%BC%9A7%E6%9C%88-10%E6%9C%88%E5%B0%8F%E7%BB%93/index.html">
 <meta property="og:site_name" content="空白墙">
-<meta property="og:description" content="做自己的光.">
+<meta property="og:description" content="做视频卡顿根因分析项目两个月的一点个人小结，和其他一些感想。">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-10-30T16:05:01.000Z">
+<meta property="article:modified_time" content="2020-10-30T16:05:28.246Z">
 <meta property="article:author" content="Haoyang Qian">
-<meta property="article:tag" content="Big data; Software development; Business analysis; AI; Data mining.">
+<meta property="article:tag" content="Root Cause Analysis">
+<meta property="article:tag" content="Video Buffering">
+<meta property="article:tag" content="Notes">
+<meta property="article:tag" content="Personal Life">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://haq-13.github.io/archives/2020/10/">
+<link rel="canonical" href="https://haq-13.github.io/2020/10/31/Notes%EF%BC%9A7%E6%9C%88-10%E6%9C%88%E5%B0%8F%E7%BB%93/">
 
 
 <script id="page-configurations">
@@ -39,12 +44,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>归档 | 空白墙</title>
+  <title>Notes：7月-10月小结 | 空白墙</title>
   
 
 
@@ -163,210 +168,163 @@
         <div class="content-wrap">
           
 
-          <div class="content archive">
+          <div class="content post posts-expand">
             
 
+    
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <span class="collection-header">嗯..! 目前共计 16 篇日志。 继续努力。</span>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://haq-13.github.io/2020/10/31/Notes%EF%BC%9A7%E6%9C%88-10%E6%9C%88%E5%B0%8F%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Haoyang Qian">
+      <meta itemprop="description" content="做自己的光.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="空白墙">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Notes：7月-10月小结
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-10-31 00:05:01" itemprop="dateCreated datePublished" datetime="2020-10-31T00:05:01+08:00">2020-10-31</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Notes/" itemprop="url" rel="index"><span itemprop="name">Notes</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.3k</span>
+            </span>
+            <div class="post-description">做视频卡顿根因分析项目两个月的一点个人小结，和其他一些感想。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2020</span>
-    </div>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-10-31T00:05:01+08:00"
-              content="2020-10-31">
-          10-31
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/10/31/Notes%EF%BC%9A7%E6%9C%88-10%E6%9C%88%E5%B0%8F%E7%BB%93/" itemprop="url">
-            <span itemprop="name">Notes：7月-10月小结</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-10-30T00:06:23+08:00"
-              content="2020-10-30">
-          10-30
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/10/30/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E8%81%9A%E7%B1%BB%E7%BB%93%E6%9E%9C%E4%BC%98%E5%8C%96/" itemprop="url">
-            <span itemprop="name">数据开发：聚类结果优化</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-10-28T20:44:53+08:00"
-              content="2020-10-28">
-          10-28
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/10/28/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E6%A0%B9%E5%9B%A0%E7%BB%93%E6%9E%9C%E8%B0%83%E4%BC%98/" itemprop="url">
-            <span itemprop="name">数据开发：根因结果调优</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-10-28T20:41:37+08:00"
-              content="2020-10-28">
-          10-28
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/10/28/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E8%81%9A%E7%B1%BB%E7%BB%93%E6%9E%9C%E5%88%86%E6%9E%90/" itemprop="url">
-            <span itemprop="name">数据开发：聚类结果分析</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-10-22T22:21:24+08:00"
-              content="2020-10-22">
-          10-22
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/10/22/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E7%BB%B4%E5%BA%A6%E4%B8%8B%E9%92%BB/" itemprop="url">
-            <span itemprop="name">数据开发：维度下钻</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-10-22T22:18:08+08:00"
-              content="2020-10-22">
-          10-22
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/10/22/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90%E8%81%9A%E7%B1%BB%E6%84%8F%E4%B9%89/" itemprop="url">
-            <span itemprop="name">数据开发：根因分析聚类意义</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-10-20T21:05:22+08:00"
-              content="2020-10-20">
-          10-20
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/10/20/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E5%8F%82%E6%95%B0%E7%BD%91%E6%A0%BC%E5%92%8C%E6%A0%B9%E5%9B%A0%E9%A2%91%E6%AC%A1/" itemprop="url">
-            <span itemprop="name">数据开发：参数网格和根因频次</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-10-17T13:53:51+08:00"
-              content="2020-10-17">
-          10-17
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/10/17/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E6%9D%83%E9%87%8D%E9%98%88%E5%80%BC%E5%92%8C%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E5%AE%8C%E6%95%B4%E5%BA%A6/" itemprop="url">
-            <span itemprop="name">数据开发：权重阈值和时间序列完整度</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-10-14T21:06:22+08:00"
-              content="2020-10-14">
-          10-14
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/10/14/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E9%99%8D%E7%BB%B4%E8%A7%92%E5%BA%A6%E5%92%8C%E6%9D%83%E9%87%8D%E8%80%83%E8%99%91/" itemprop="url">
-            <span itemprop="name">数据开发：降维角度和权重考虑</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
+        <h2 id="小结和感想"><a href="#小结和感想" class="headerlink" title="小结和感想"></a>小结和感想</h2><p>从入职到今天，刚好是108天。</p>
+<p>从9月初做根因分析的平台和算法开始，到现在10月末准备上线项目代码为止，正好是两个月。从一开始的跌跌绊绊，对需求理解不够清晰，被某些问题卡住进度无法推进，到现在遇到问题能自己定位到具体解决方向和优化角度，还是看到了自己的提升。</p>
+<p>9月初，同样也是自己决定要写blog的时间点，所以项目从前期调研到分析建模到算法调优到准备正式落地上线的全过程正好都在blog里记录了下来。在大部分时间里，自己在想的都是从什么方向和角度去解决某个问题，而不是实现方面的问题。也就是说，每天学习、总结、反思、优化算法原理和逻辑的时间可能占了70%-80%，实践自己思路的时间也就20%左右。这两个月里，我已经习惯了在下班回公寓的路上，用音乐帮助自己放空，打开白天已经僵化的思路。有好几次灵感的涌现，都是下班之后心情放松的时候。</p>
+<p>再往前，退回到我刚入职时的7月中旬。那段时间的状态和九月十月的状态是完全不同的。在刚入职的七八月，零零碎碎做了一些小的工作，有项目的代码重构优化，有数据平台的数据ETL，也有堡垒机、GitLab平台的一些工作，主要是让我熟悉相关平台、项目。</p>
+<p>在那两个月，我以一天或两天一本的速度学习了40多本相关书籍。当时被领导说过工作没有主动性，我也觉得当时的心态不像工作的心态更像学习的心态，但我很喜欢那时每开始学习一本书都很兴奋激动的自己。在九月十月，每天不再有什么时间看书，每天下班后看点，两个月只看了两三本。既然选择了互联网，自我学习提升是不能停下的，希望自己一直记着这一点。</p>
+<p>还有从入职开始写的每日工作小结。一开始还不用交周报的时候，我会把每天做了什么，思考了什么，都记录下来，作为一天的小结。在开始交周报之后，好像失去了每天记录的欲望，只是把周报贴到自己的工作小结里。毕竟一开始的工作做的比较零碎，可以记录的多，现在是围绕着一个项目去攻克不同方面的问题，每天能记录的少，可以理解。</p>
+<p>九月有不少次思考而不得从而心烦意乱的时刻。最心烦的是在数据量极大的情况下，不论做什么尝试，耗时都极大，在结果没出来的时候除了等待又无法做其他的工作。耗时和内存占用的问题足足占用了我一周多的时间，那一周可以说基本没有产出，整个人毫无成就感的同时，也深感时间被浪费。那时候没有第一时间去解决耗时和内存问题而是想先凑合着开展后续的建模和算法工作，是个很严重的决策失误。</p>
+<p>等到耗时和内存减少到秒级和兆级之后，工作就变得流畅很多。虽然还是有研究源码大半天还找不到优化思路的情况，但是每天基本上能保证有一个稳定的优化和提升，至少能保证自己对于算法和模型的理解是每天在加深的。</p>
+<p>回顾这三个多月，尽管有思路不明而烦心的时候，但是多数情况下，自己的心态都是保持在积极的一面。每次的难题攻克和知识技能的掌握都能让我感到喜悦，我也能清楚地知道自己所做工作的意义所在，并不乏动力去达到目标。</p>
+<p>在我看来，我需要把提高生产力和提高效率作为近期主要目标，以更少的时间产出更多更有效的成果。多出来的时间可以继续投入到自我提升上，减少用空闲时间摸鱼划水的行为。要一直抱有时间过得很快的觉悟，不然是对自己的不负责任。</p>
 
     </div>
+    <!-- 文章结束表示语-->
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paint-brush"></i>感谢阅读-------------</div>
+    
+</div>
+      
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>喜欢就请打个赏吧^_^</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="Haoyang Qian 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="Haoyang Qian 支付宝">
+        <p>支付宝</p>
+      </div>
+
   </div>
-  
-  
-  
+</div>
 
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Haoyang Qian
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://haq-13.github.io/2020/10/31/Notes%EF%BC%9A7%E6%9C%88-10%E6%9C%88%E5%B0%8F%E7%BB%93/" title="Notes：7月-10月小结">https://haq-13.github.io/2020/10/31/Notes：7月-10月小结/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Root-Cause-Analysis/" rel="tag"><i class="fa fa-tag"></i> Root Cause Analysis</a>
+              <a href="/tags/Video-Buffering/" rel="tag"><i class="fa fa-tag"></i> Video Buffering</a>
+              <a href="/tags/Notes/" rel="tag"><i class="fa fa-tag"></i> Notes</a>
+              <a href="/tags/Personal-Life/" rel="tag"><i class="fa fa-tag"></i> Personal Life</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/10/30/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%EF%BC%9A%E8%81%9A%E7%B1%BB%E7%BB%93%E6%9E%9C%E4%BC%98%E5%8C%96/" rel="prev" title="数据开发：聚类结果优化">
+      <i class="fa fa-chevron-left"></i> 数据开发：聚类结果优化
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
   
 
 
@@ -419,6 +377,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E7%BB%93%E5%92%8C%E6%84%9F%E6%83%B3"><span class="nav-number">1.</span> <span class="nav-text">小结和感想</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
